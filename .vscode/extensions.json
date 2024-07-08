@@ -1,0 +1,14 @@
+{
+  "recommendations": [
+    "svelte.svelte-vscode",
+    "dbaeumer.vscode-eslint",  // ESLintを自動化
+    "esbenp.prettier-vscode",  // フォーマッタ(Prettier)
+    "formulahendry.auto-rename-tag",  // タグをセットで自動変更
+    "formulahendry.auto-close-tag",  // 閉じタグを自動で生成
+    "streetsidesoftware.code-spell-checker",  // スペルチェック
+    "oderwat.indent-rainbow",  // インデントを色付け
+    "mosapride.zenkaku",  // 全角スペースをわかりやすく
+    "christian-kohler.path-intellisense",  // パス補完
+    "vscode-icons-team.vscode-icons",  // ファイルアイコン
+  ]
+}

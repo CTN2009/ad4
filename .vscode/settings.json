@@ -1,0 +1,45 @@
+{
+  "cSpell.words": [
+    "Callouts",
+    "cfrom",
+    "consts",
+    "copyfiles",
+    "kaitori",
+    "Kaku",
+    "prefcode",
+    "selectbox",
+    "youremail",
+    "yourname",
+    "zansai",
+    "zipcode"
+  ],
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[markdown]": {
+    "files.trimTrailingWhitespace": false,
+    "editor.formatOnSave": false
+  },
+  "editor.wordWrap": "on",
+  "editor.rulers": [120], // 1行120文字のルールのために補助線を引く
+  "editor.tabSize": 2, // タブサイズ2のルール
+  "editor.renderWhitespace": "all", // 半角空白を・で表示
+  "editor.bracketPairColorization.enabled": true, // 括弧の対応を色付け
+  "files.insertFinalNewline": true, // 保存時にファイルの最後に空行を挿入する
+  "files.trimFinalNewlines": true, // 保存時にファイルの最後に存在する空行を削除する
+  "files.trimTrailingWhitespace": true, // 保存時に行の終端に存在する空白文字を削除する
+  "debug.inlineValues": "on",
+  "[svelte]": {
+    "editor.defaultFormatter": "svelte.svelte-vscode"
+  },
+  "[php]": {
+    "editor.defaultFormatter": "bmewburn.vscode-intelephense-client"
+  } // デバッグ中にインラインで変数の内容を表示する
+}
