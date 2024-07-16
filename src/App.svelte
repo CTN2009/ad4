@@ -1,18 +1,11 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import Router from "svelte-spa-router";
   import Layout from "@components/Layout.svelte";
   import Home from "@page/home/Home.svelte";
   import Personal from "@page/personal/Personal.svelte";
   import Vehicle from "@page/vehicle/Vehicle.svelte";
   import { postUrl } from "@consts/consts";
   import ProgressBar from "@components/ProgressBar.svelte";
-
-  const routes = {
-    "/": Home,
-    "/chat": Vehicle,
-    "*": Home,
-  };
 
   // memo: 車両情報のコンポーネントを表示させる為、個人情報の入力状況をもつstate
   let isPersonalInputComplete = true;
@@ -33,21 +26,17 @@
   onMount(checkLocalStorageAndRedirect); // Call the function when the component mounts
 </script>
 
-<main>
-  <Router {routes}></Router>
-</main>
-{#if isVehicleInputComplete}
-  <Layout>
-    <form slot="content" method="post" action={postUrl}>
-      <div data-visible={isPersonalInputComplete}>
-        <Vehicle bind:isPersonalInputComplete bind:compliedCount />
-      </div>
-    </form>
-    <svelte:fragment slot="progressBar">
-      <ProgressBar {compliedCount} />
-    </svelte:fragment>
-  </Layout>
-{/if}
+<!-- Personal Inputs -->
+<Layout>
+  <form slot="content" method="post" action={postUrl}>
+    <div data-visible={isPersonalInputComplete}>
+      <Vehicle bind:isPersonalInputComplete bind:compliedCount />
+    </div>
+  </form>
+  <svelte:fragment slot="progressBar">
+    <ProgressBar {compliedCount} />
+  </svelte:fragment>
+</Layout>
 
 <style lang="scss">
   /* https://github.com/Andy-set-studio/modern-css-reset */

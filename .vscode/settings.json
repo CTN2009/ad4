@@ -41,5 +41,6 @@
   },
   "[php]": {
     "editor.defaultFormatter": "bmewburn.vscode-intelephense-client"
-  } // デバッグ中にインラインで変数の内容を表示する
+  },
+  "editor.acceptSuggestionOnEnter": "off" // デバッグ中にインラインで変数の内容を表示する
 }

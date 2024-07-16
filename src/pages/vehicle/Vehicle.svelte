@@ -57,6 +57,9 @@
   import PersonalInfoConfirmField from "@components/PersonalInfoConfirmField.svelte";
   import Spinner from "@components/Spinner.svelte";
 
+  // 車種選択用
+  import VehiclePopup from "@components/VehiclePopup.svelte";
+
   // memo: 個人情報の入力と個人認証が完了した事を親コンポーネントに伝える
   export let isPersonalInputComplete: boolean = false;
   export let compliedCount: number;
@@ -84,13 +87,17 @@
   let otherItems: string[] = []; // オプション(該当なしの場合は空)
   let candidateDate: Date | null = null; // 査定候補日
 
+  let vehicleAnswerText: string = ""; // 車種(該当なしの場合は空)
+
   // memo: モーダル表示状況のstate
   let selectedColor: string = "";
   let showInspectionDateModal = false; // 車検日
-  let showDesiredTimeModal = false; // 車検日
+  let showDesiredTimeModal = false; // 売却時期
   let showTroubleModal = false; // 事故歴・修復歴
-  let showColorModal = false; //走行距離
+  let showColorModal = false; // カラー
   let showRunModal = false; //走行距離
+
+  let showVehicleModal = false; //メーカー・車種
 
   // memo: 該当なしの状態
   let isUnmatchedInterior: boolean = false; // 内装
@@ -100,6 +107,7 @@
   let isShowPersonalInfoRequestSecond = false;
   let isEngineCapacityRequest = false;
   let isEngineCapacityAnswer = false;
+
   let isTroubleAnswer = false;
   let isTroubleRequest = false;
   let isColorRequest = false;
@@ -127,6 +135,9 @@
   let isValuationButton = false;
   let isAuthSuccess = false;
   let isDuplicateAppraisal = false;
+
+  let isVehicleRequest = false;
+  let isVehicleAnswer = false;
 
   // 個人情報入力用
   // memo: ページ表示状況のstate.
@@ -211,6 +222,15 @@
     }
   };
 
+  // Vehicle PopUp Component Selected
+  const selectedVehiclePopup = (event: any) => {
+    vehicleAnswerText = event.detail.text;
+    showVehicleModal = false;
+  };
+  let modalTitleVehicle = "メーカー";
+  const changeTitleVehiclePopup = (event: any) => {
+    modalTitleVehicle = event.detail.message;
+  };
   const onFormSubmit = async () => {
     var jsonString = sessionStorage.getItem("appraisal_form_data");
     var savedParams = sessionStorage.getItem("savedParameters");
@@ -289,7 +309,7 @@
       sohinmonitor: "",
       sohinsan: "",
       "date-881": formattedCandidateDate,
-      fpc:fpc,
+      fpc: fpc,
     };
 
     const reqDetail = {
@@ -334,19 +354,23 @@
 
     const appraisalResponse = await appraisalRequest(reqDetail);
     // Check if appraisal was successful and status code is 200 or 201
-    if (appraisalResponse.success && appraisalResponse.statusCode === 200) {
-      await triggerMail(reqMail);
-      const location: string = `https://ctn-net.jp/kaitori/car/ad3/thanks/?aid=${ctn_wpc_f7_counter}`;
+    // if (appraisalResponse.success && appraisalResponse.statusCode === 200) {
+    //   await triggerMail(reqMail);
+    //   const location: string = `https://ctn-net.jp/kaitori/car/ad3/thanks/?aid=${ctn_wpc_f7_counter}`;
 
-      // Clear the appraisal_form_data from session storage
-      sessionStorage.removeItem("appraisal_form_data");
-      window.location.href = location;
-    } else if (appraisalResponse.statusCode === 409) {
-      // isDuplicateAppraisal = true;
-    } else {
-      sessionStorage.removeItem("appraisal_form_data");
-      window.location.href = "https://ctn-net.jp/kaitori/car/ad3/";
-    }
+    //   // Clear the appraisal_form_data from session storage
+    //   sessionStorage.removeItem("appraisal_form_data");
+    //   window.location.href = location;
+    // } else if (appraisalResponse.statusCode === 409) {
+    //   // isDuplicateAppraisal = true;
+    // } else {
+    //   sessionStorage.removeItem("appraisal_form_data");
+    //   window.location.href = "https://ctn-net.jp/kaitori/car/ad3/";
+    // }
+    await triggerMail(reqMail);
+    const location: string = `https://ctn-net.jp/kaitori/car/ad3/thanks/?aid=${ctn_wpc_f7_counter}`;
+    sessionStorage.removeItem("appraisal_form_data");
+    window.location.href = location;
   };
 
   // 個人情報の確認する際に修正を押したら入力欄までスクロールする
@@ -433,7 +457,12 @@
     isShowAuthButton = true;
   }
 
-  $: if (isClickAuthCodeRequest && !isRequestAuthCode && isNotModifyMode && !isDuplicateAppraisal) {
+  $: if (
+    isClickAuthCodeRequest &&
+    !isRequestAuthCode &&
+    isNotModifyMode &&
+    !isDuplicateAppraisal
+  ) {
     handleScrollToBottom({ isWait: false });
   }
 
@@ -474,23 +503,38 @@
     }, actionWaitTime);
   });
 
+  // 挨拶表示
   $: if (isShowPersonalInfoRequest) {
     // handleScrollToTop({ isWait: false });
     setTimeout(() => {
-      isShowPersonalInfoRequestSecond = true;
+      //isShowPersonalInfoRequestSecond = true;
+      isVehicleRequest = true;
     }, actionWaitTime);
   }
 
+  // 挨拶表示2
   $: if (isShowPersonalInfoRequest) {
     // handleScrollToTop({ isWait: false });
     setTimeout(() => {
-      isColorRequest = true;
+      //isColorRequest = true;
+
+      isVehicleRequest = true;
     }, actionWaitTime);
   }
 
-  $: if (isPersonalInputComplete) {
-    isEngineCapacityRequest = true;
-    handleScrollToBottom({ waitTime: 750, compensation: 200 });
+  // 車種選択
+  $: if (isVehicleRequest) {
+    // 車種選択完了
+    if (vehicleAnswerText.length > 0 && !showVehicleModal) {
+      isVehicleAnswer = true;
+      // handleScrollToBottom({ waitTime: 1250 });
+    }
+  }
+
+  $: if (isVehicleAnswer) {
+    //isShowPersonalInfoRequestSecond = true;
+    isColorRequest = true;
+    handleScrollToBottom({ waitTime: 1250 });
   }
 
   $: if (isColorRequest) {
@@ -610,6 +654,11 @@
     }, actionWaitTime);
   }
   // Handle checkboxColor change
+  function handleCheckboxChangeVehicle() {
+    showVehicleModal = false;
+  }
+
+  // Handle checkboxColor change
   function handleCheckboxChange() {
     showColorModal = false;
   }
@@ -638,6 +687,12 @@
     }, actionWaitTime);
   }
 
+  // 購入者情報完了
+  $: if (isPersonalInputComplete) {
+    isEngineCapacityRequest = true;
+    handleScrollToBottom({ waitTime: 750, compensation: 200 });
+  }
+
   $: if (candidateDate === null) {
     formattedCandidateDate = "";
   } else {
@@ -646,6 +701,8 @@
 
   $: {
     compliedCount = countTrue(
+      isVehicleAnswer,
+
       isColorAnswer,
       isRunAnswer,
       isTroubleAnswer,
@@ -719,11 +776,78 @@
         </div>
       </SimpleModal>
     {/if}
-
-    {#if isShowPersonalInfoRequestSecond === true}
+    <!-- Vehicle Brand -->
+    {#if isVehicleRequest}
       <ChatBalloons>
-        早速ですが、査定したいおクルマの<span>ボディカラー</span
+        早速ですが、査定したいおクルマの<span
+          >メーカー・車種・年式・グレード</span
         >を選択してください。</ChatBalloons
+      >
+
+      <DelayedDisplay>
+        <button
+          type="button"
+          class="selectHandle"
+          on:click={() => {
+            showVehicleModal = true;
+            modalTitleVehicle = "メーカー";
+          }}
+        >
+          {#if vehicleAnswerText !== ""}
+            {vehicleAnswerText}
+          {:else}
+            選択してください
+          {/if}
+        </button>
+      </DelayedDisplay>
+      <Modal
+        bind:show={showVehicleModal}
+        {confirmBtnText}
+        hasError={!isUnmatchedInterior && vehicleAnswerText.length == 0}
+        errorMessage="{modalTitleVehicle}を選択してください。"
+      >
+        <div slot="itemName">
+          <h2>
+            {modalTitleVehicle}
+          </h2>
+        </div>
+        <div slot="selectionContent">
+          <VehiclePopup
+            on:selectedVehicle={selectedVehiclePopup}
+            on:changeTitle={changeTitleVehiclePopup}
+          ></VehiclePopup>
+          <!--
+          <div
+            class="selectionContent scroll"
+            data-grid-row="3"
+            data-grid-tile="true"
+          >
+            {#each colorOptions as option}
+              <CarInfoMultipleSelectOptions
+                value={option.value}
+                imgUrl={option.imgUrl}
+                bind:group={vehicleAnswerText}
+                on:click={handleCheckboxChangeVehicle}
+              ></CarInfoMultipleSelectOptions>
+            {/each}
+          </div>-->
+        </div>
+      </Modal>
+    {/if}
+    {#if isVehicleAnswer}
+      <ChatBalloons variant="user">
+        <span class="boldText">
+          {vehicleAnswerText}
+        </span>
+        です。
+      </ChatBalloons>
+    {/if}
+
+    <!-- Color -->
+    <!-- {#if isShowPersonalInfoRequestSecond === true} -->
+    {#if isColorRequest}
+      <ChatBalloons>
+        <span>ボディカラー</span>を選択してください。</ChatBalloons
       >
 
       <DelayedDisplay>
@@ -776,6 +900,7 @@
       </ChatBalloons>
     {/if}
 
+    <!-- Vehicle Run Km -->
     {#if isRunRequest}
       <ChatBalloons>
         <span class="boldText">走行距離</span>はどれくらい走っていますか？<br />
@@ -1243,36 +1368,45 @@
             variant="decision"
             disabled={isClickAuthCodeRequest && isRequestAuthCode}
             on:click={async () => {
-            const savedParams = sessionStorage.getItem("savedParameters");
-            const rawResponseData = localStorage.getItem('responseData');
+              const savedParams = sessionStorage.getItem("savedParameters");
+              const rawResponseData = localStorage.getItem("responseData");
 
-            let response_id;
-            if (rawResponseData !== null) {
-              response_id = parseInt(rawResponseData, 10);
-              if (isNaN(response_id)) response_id = undefined;
-            }
-
-            let remoteIP;
-            if (savedParams) {
-              try {
-                const savedParamObj = JSON.parse(savedParams);
-                remoteIP = savedParamObj?.userIP;
-              } catch (error) {
-                console.error("Failed to parse saved parameters:", error);
+              let response_id;
+              if (rawResponseData !== null) {
+                response_id = parseInt(rawResponseData, 10);
+                if (isNaN(response_id)) response_id = undefined;
               }
-            }
+
+              let remoteIP;
+              if (savedParams) {
+                try {
+                  const savedParamObj = JSON.parse(savedParams);
+                  remoteIP = savedParamObj?.userIP;
+                } catch (error) {
+                  console.error("Failed to parse saved parameters:", error);
+                }
+              }
 
               isClickAuthCodeRequest = true;
               isNotModifyMode = true;
 
-              const [authCodeRequestSuccess, conflictStatus] = await requestAuthCode($formStore.tel, $formStore.youremail, response_id, remoteIP, $formStore.yourname);
+              const [authCodeRequestSuccess, conflictStatus] =
+                await requestAuthCode(
+                  $formStore.tel,
+                  $formStore.youremail,
+                  response_id,
+                  remoteIP,
+                  $formStore.yourname,
+                );
               isRequestAuthCode = authCodeRequestSuccess;
               isDuplicateAppraisal = conflictStatus;
             }}>送信する</Button
           >
           <Button
             variant="decision-outline"
-            disabled={isClickAuthCodeRequest && isRequestAuthCode && !isDuplicateAppraisal}
+            disabled={isClickAuthCodeRequest &&
+              isRequestAuthCode &&
+              !isDuplicateAppraisal}
             on:click={() => {
               isNotModifyMode = false;
               validateInit();
