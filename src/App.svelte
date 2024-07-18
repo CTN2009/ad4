@@ -7,6 +7,12 @@
   import { postUrl } from "@consts/consts";
   import ProgressBar from "@components/ProgressBar.svelte";
 
+  import AdTagCommon from "@components/AdTagCommon.svelte";
+  import AdTagTop from "@components/AdTagTop.svelte";
+
+  import GoogleTagManagerHead from "@components/GoogleTagManagerHead.svelte";
+  import GoogleTagManagerBody from "@components/GoogleTagManagerBody.svelte";
+
   // memo: 車両情報のコンポーネントを表示させる為、個人情報の入力状況をもつstate
   let isPersonalInputComplete = true;
   let compliedCount: number;
@@ -37,6 +43,18 @@
     <ProgressBar {compliedCount} />
   </svelte:fragment>
 </Layout>
+<svelte:head>
+  <!-- GTM HEAD -->
+  <GoogleTagManagerHead></GoogleTagManagerHead>
+  <!-- Ad tag(全ページ用) -->
+  <AdTagCommon></AdTagCommon>
+  <!-- Ad tag(TOP用) -->
+  <AdTagTop></AdTagTop>
+</svelte:head>
+
+<!-- GTM BODY -->
+<GoogleTagManagerBody></GoogleTagManagerBody>
+<!-- /GTM BODY -->
 
 <style lang="scss">
   /* https://github.com/Andy-set-studio/modern-css-reset */

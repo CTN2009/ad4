@@ -4,10 +4,19 @@
   export let variant: "customer" | "user" = "customer";
   export let showIcon: boolean = true;
   export let width: "fit-content" | "100%" = "fit-content";
-  
+  export let isWait: boolean = true;
 
   let isShowMessage = false;
-  setTimeout(() => (isShowMessage = true), variant == "customer" ? 750 : 250);
+  //console.log(isWait);
+  if (isWait) {
+    setTimeout(
+      () => (isShowMessage = true),
+      //variant == "customer" ? 750 : 250
+      variant == "customer" ? 750 : 250,
+    );
+  } else {
+    isShowMessage = true;
+  }
 </script>
 
 <div class="box" data-variant={variant} data-show-icon={showIcon}>
@@ -28,7 +37,6 @@
     </div>
   </div>
 </div>
-
 
 <style lang="scss">
   .box {

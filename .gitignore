@@ -55,3 +55,7 @@ Thumbs.db
 
 ### Vitest ###
 coverage/
+
+#### tmp ###
+*.url
+--*.*

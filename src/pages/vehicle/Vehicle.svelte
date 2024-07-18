@@ -368,7 +368,7 @@
     //   window.location.href = "https://ctn-net.jp/kaitori/car/ad3/";
     // }
     await triggerMail(reqMail);
-    const location: string = `https://ctn-net.jp/kaitori/car/ad3/thanks/?aid=${ctn_wpc_f7_counter}`;
+    const location: string = `https://ctn-net.jp/kaitori/car/ad4/thanks.php?aid=${ctn_wpc_f7_counter}`;
     sessionStorage.removeItem("appraisal_form_data");
     window.location.href = location;
   };
@@ -540,7 +540,7 @@
   $: if (isColorRequest) {
     if (colorAnswerText.length > 0 && !showColorModal) {
       isColorAnswer = true;
-      // handleScrollToBottom({ waitTime: 1250 });
+      //handleScrollToBottom({ waitTime: 1250 });
     }
   }
   $: if (isColorAnswer) {
@@ -800,6 +800,14 @@
           {/if}
         </button>
       </DelayedDisplay>
+
+      <VehiclePopup
+        bind:show={showVehicleModal}
+        on:selectedVehicle={selectedVehiclePopup}
+        on:changeTitle={changeTitleVehiclePopup}
+      ></VehiclePopup>
+
+      <!--
       <Modal
         bind:show={showVehicleModal}
         {confirmBtnText}
@@ -815,8 +823,8 @@
           <VehiclePopup
             on:selectedVehicle={selectedVehiclePopup}
             on:changeTitle={changeTitleVehiclePopup}
-          ></VehiclePopup>
-          <!--
+          ></VehiclePopup>-->
+      <!--
           <div
             class="selectionContent scroll"
             data-grid-row="3"
@@ -831,11 +839,11 @@
               ></CarInfoMultipleSelectOptions>
             {/each}
           </div>-->
-        </div>
-      </Modal>
+      <!--</div>
+      </Modal>-->
     {/if}
     {#if isVehicleAnswer}
-      <ChatBalloons variant="user">
+      <ChatBalloons variant="user" isWait={false}>
         <span class="boldText">
           {vehicleAnswerText}
         </span>
@@ -846,7 +854,7 @@
     <!-- Color -->
     <!-- {#if isShowPersonalInfoRequestSecond === true} -->
     {#if isColorRequest}
-      <ChatBalloons>
+      <ChatBalloons isWait={false}>
         <span>ボディカラー</span>を選択してください。</ChatBalloons
       >
 
@@ -892,7 +900,7 @@
     {/if}
 
     {#if isColorAnswer}
-      <ChatBalloons variant="user">
+      <ChatBalloons variant="user" isWait={false}>
         <span class="boldText">
           {colorAnswerText}
         </span>
@@ -902,7 +910,7 @@
 
     <!-- Vehicle Run Km -->
     {#if isRunRequest}
-      <ChatBalloons>
+      <ChatBalloons isWait={false}>
         <span class="boldText">走行距離</span>はどれくらい走っていますか？<br />
         ※不明の場合は大体で構いません。
       </ChatBalloons>
@@ -950,13 +958,13 @@
     {/if}
 
     {#if isRunAnswer}
-      <ChatBalloons variant="user">
+      <ChatBalloons variant="user" isWait={false}>
         <span class="boldText">{isRun}</span>。
       </ChatBalloons>
     {/if}
 
     {#if isTroubleRequest}
-      <ChatBalloons>
+      <ChatBalloons isWait={false}>
         <span class="boldText">事故歴・修復歴</span>はありますか？<br />
         ※不明の場合は大体で構いません。
       </ChatBalloons>
@@ -999,13 +1007,13 @@
     {/if}
 
     {#if isTroubleAnswer}
-      <ChatBalloons variant="user">
+      <ChatBalloons variant="user" isWait={false}>
         <span class="boldText">{inspectionTrouble}</span>。
       </ChatBalloons>
     {/if}
 
     {#if isJisouRequest}
-      <ChatBalloons>
+      <ChatBalloons isWait={false}>
         <span class="boldText">自走</span>は可能ですか？<br />
         ※不明の場合は大体で構いません。
       </ChatBalloons>
@@ -1024,13 +1032,13 @@
     {/if}
 
     {#if isJIsouAnswer}
-      <ChatBalloons variant="user">
+      <ChatBalloons variant="user" isWait={false}>
         <span class="boldText">{jisou}</span>。
       </ChatBalloons>
     {/if}
 
     {#if isInspectionDateRequest}
-      <ChatBalloons>
+      <ChatBalloons isWait={false}>
         <span class="boldText">次回の車検日</span>はいつになりますか？
       </ChatBalloons>
 
@@ -1072,13 +1080,13 @@
     {/if}
 
     {#if isInspectionDateAnswer}
-      <ChatBalloons variant="user">
+      <ChatBalloons variant="user" isWait={false}>
         <span class="boldText">{inspectionDate}</span>です。
       </ChatBalloons>
     {/if}
 
     {#if isLoanRequest}
-      <ChatBalloons>
+      <ChatBalloons isWait={false}>
         現在、<span class="boldText">ローン残債</span>はありますか？
       </ChatBalloons>
 
@@ -1096,13 +1104,13 @@
     {/if}
 
     {#if isLoanAnswer}
-      <ChatBalloons variant="user">
+      <ChatBalloons variant="user" isWait={false}>
         <span class="boldText">{loan}</span>。
       </ChatBalloons>
     {/if}
 
     {#if isDesiredTimeRequest}
-      <ChatBalloons>
+      <ChatBalloons isWait={false}>
         <span class="boldText">売却時期</span>はいつ頃お考えでしょうか？
       </ChatBalloons>
 
@@ -1144,14 +1152,14 @@
     {/if}
 
     {#if isDesiredTimeAnswer}
-      <ChatBalloons variant="user">
+      <ChatBalloons variant="user" isWait={false}>
         <span class="boldText">{isDesiredTime}</span>です。
       </ChatBalloons>
     {/if}
 
     {#if isCandidateDateRequest}
       <div>
-        <ChatBalloons>
+        <ChatBalloons isWait={false}>
           <span class="boldText">査定候補日</span>を教えてください
         </ChatBalloons>
       </div>
@@ -1164,7 +1172,7 @@
     {/if}
 
     {#if isCandidateDateAnswer}
-      <ChatBalloons variant="user">
+      <ChatBalloons variant="user" isWait={false}>
         <span class="boldText">{formattedCandidateDate}</span>です
       </ChatBalloons>
     {/if}
