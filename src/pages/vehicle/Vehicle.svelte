@@ -534,7 +534,8 @@
   $: if (isVehicleAnswer) {
     //isShowPersonalInfoRequestSecond = true;
     isColorRequest = true;
-    handleScrollToBottom({ waitTime: 1250 });
+    //handleScrollToBottom({ waitTime: 1250 });
+    handleScrollToBottom({ isWait: false });
   }
 
   $: if (isColorRequest) {
@@ -545,53 +546,62 @@
   }
   $: if (isColorAnswer) {
     isRunRequest = true;
-    handleScrollToBottom({ waitTime: 1250 });
+    //handleScrollToBottom({ waitTime: 1250 });
+    handleScrollToBottom({ isWait: false });
   }
 
   $: if (isRunRequest) {
     if (isRun !== "" && !showRunModal) {
       isRunAnswer = true;
-      handleScrollToBottom({ waitTime: 1250 });
+      //handleScrollToBottom({ waitTime: 1250 });
+      handleScrollToBottom({ isWait: false });
     }
   }
   $: if (isRunAnswer) {
     isTroubleRequest = true;
-    handleScrollToBottom({ waitTime: 1250 });
+    //handleScrollToBottom({ waitTime: 1250 });
+    handleScrollToBottom({ isWait: false });
   }
 
   $: if (isTroubleRequest) {
     if (inspectionTrouble !== "" && !showTroubleModal) {
       isTroubleAnswer = true;
-      handleScrollToBottom({ waitTime: 1250 });
+      //handleScrollToBottom({ waitTime: 1250 });
+      handleScrollToBottom({ isWait: false });
     }
   }
 
   $: if (isTroubleAnswer) {
     isJisouRequest = true;
-    handleScrollToBottom({ waitTime: 1250 });
+    //handleScrollToBottom({ waitTime: 1250 });
+    handleScrollToBottom({ isWait: false });
   }
 
   $: if (isJisouRequest) {
     if (jisou !== "") {
       isJIsouAnswer = true;
-      handleScrollToBottom({ waitTime: 1250 });
+      //handleScrollToBottom({ waitTime: 1250 });
+      handleScrollToBottom({ isWait: false });
     }
   }
 
   $: if (isJIsouAnswer) {
     isInspectionDateRequest = true;
-    handleScrollToBottom({ waitTime: 1250 });
+    //handleScrollToBottom({ waitTime: 1250 });
+    handleScrollToBottom({ isWait: false });
   }
 
   $: if (isInspectionDateRequest) {
     if (inspectionDate !== "" && !showInspectionDateModal) {
       isInspectionDateAnswer = true;
-      handleScrollToBottom({ waitTime: 1250 });
+      //handleScrollToBottom({ waitTime: 1250 });
+      handleScrollToBottom({ isWait: false });
     }
   }
   $: if (isInspectionDateAnswer) {
     isLoanRequest = true;
-    handleScrollToBottom({ waitTime: 1250 });
+    //handleScrollToBottom({ waitTime: 1250 });
+    handleScrollToBottom({ isWait: false });
   }
 
   $: if (isLoanRequest) {
@@ -604,38 +614,43 @@
   $: if (isLoanAnswer) {
     if (loan !== "") {
       isDesiredTimeRequest = true;
-      handleScrollToBottom({ waitTime: 1250 });
+      //handleScrollToBottom({ waitTime: 1250 });
+      handleScrollToBottom({ isWait: false });
     }
   }
 
   $: if (isDesiredTimeRequest) {
     if (isDesiredTime !== "" && !showDesiredTimeModal) {
       isDesiredTimeAnswer = true;
-      handleScrollToBottom({ waitTime: 1250 });
+      //handleScrollToBottom({ waitTime: 1250 });
+      handleScrollToBottom({ isWait: false });
     }
   }
 
   $: if (inspectionDate !== "") {
     isFuelRequest = true;
-    handleScrollToBottom({ waitTime: 1250, compensation: 200 });
+    //handleScrollToBottom({ waitTime: 1250, compensation: 200 });
+    handleScrollToBottom({ isWait: false, compensation: 200 });
   }
 
   $: if (isDesiredTimeAnswer) {
     if (isDesiredTime !== "") {
       isCandidateDateRequest = true;
-      handleScrollToBottom({ waitTime: 1250 });
+      //handleScrollToBottom({ waitTime: 1250 });
+      handleScrollToBottom({ isWait: false });
     }
   }
 
   $: if (isCandidateDateRequest) {
     if (candidateDate !== null) {
       isCandidateDateAnswer = true;
-      handleScrollToBottom();
+      handleScrollToBottom({ isWait: false, compensation: 200 });
     }
   }
   $: if (isCandidateDateAnswer) {
     isThankYouMessage = true;
-    handleScrollToBottom({ waitTime: 1250 });
+    //handleScrollToBottom({ waitTime: 1250 });
+    handleScrollToBottom({ isWait: false });
   }
 
   $: if (isThankYouMessage) {

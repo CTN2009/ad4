@@ -7,12 +7,6 @@
   import { postUrl } from "@consts/consts";
   import ProgressBar from "@components/ProgressBar.svelte";
 
-  import AdTagCommon from "@components/AdTagCommon.svelte";
-  import AdTagTop from "@components/AdTagTop.svelte";
-
-  import GoogleTagManagerHead from "@components/GoogleTagManagerHead.svelte";
-  import GoogleTagManagerBody from "@components/GoogleTagManagerBody.svelte";
-
   // memo: 車両情報のコンポーネントを表示させる為、個人情報の入力状況をもつstate
   let isPersonalInputComplete = true;
   let compliedCount: number;
@@ -30,6 +24,78 @@
     }
   };
   onMount(checkLocalStorageAndRedirect); // Call the function when the component mounts
+
+  //-------------------------
+  // Google Tag Manager
+  //-------------------------
+  // Google Tag Manager (body)
+  let addScript_gtmBody: boolean = false;
+  onMount(() => {
+    if (!addScript_gtmBody) {
+      addScript_gtmBody = true;
+      (function (w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({
+          "gtm.start": new Date().getTime(),
+          event: "gtm.js",
+        });
+        var f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s),
+          dl = l != "dataLayer" ? "&l=" + l : "";
+        j.async = true;
+        j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+        f.parentNode.insertBefore(j, f);
+      })(window, document, "script", "dataLayer", "GTM-5H75N4G");
+    }
+  });
+  //-------------------------
+  // Ad Common
+  //-------------------------
+  let addScript_adCommon: boolean = false;
+  onMount(() => {
+    // Ad Common
+    if (!addScript_adCommon) {
+      addScript_adCommon = true;
+      (function () {
+        var uqid = "3ded5G135605b816";
+        var gid = "5";
+        var a = document.createElement("script");
+        a.dataset.uqid = uqid;
+        a.dataset.gid = gid;
+        a.id = "afadfpc-3ded5G135605b816gid5-" + Date.now();
+        a.src =
+          "//ac.ads-manage.com/fpc/cookie_js.php?scriptId=" +
+          encodeURIComponent(a.id);
+        document.head.appendChild(a);
+      })();
+    }
+  });
+
+  //-------------------------
+  // Ad Top
+  //-------------------------
+  let addScript_adTop: boolean = false;
+  onMount(() => {
+    if (!addScript_adTop) {
+      addScript_adTop = true;
+      (function () {
+        var uqid = "3ded5G135605b816";
+        var spname = "spname";
+        var param = {};
+        var a = document.createElement("script");
+        a.dataset.uqid = uqid;
+        a.dataset.spname = spname;
+        a.id = "directtrack-" + uqid + Date.now();
+        a.src =
+          "//ac.ads-manage.com/fpc/directtrack_js.php?scriptId=" +
+          encodeURIComponent(a.id);
+        Object.keys(param).map(function (b) {
+          return (a.dataset[b] = param[b]);
+        });
+        document.head.appendChild(a);
+      })();
+    }
+  });
 </script>
 
 <!-- Personal Inputs -->
@@ -43,18 +109,6 @@
     <ProgressBar {compliedCount} />
   </svelte:fragment>
 </Layout>
-<svelte:head>
-  <!-- GTM HEAD -->
-  <GoogleTagManagerHead></GoogleTagManagerHead>
-  <!-- Ad tag(全ページ用) -->
-  <AdTagCommon></AdTagCommon>
-  <!-- Ad tag(TOP用) -->
-  <AdTagTop></AdTagTop>
-</svelte:head>
-
-<!-- GTM BODY -->
-<GoogleTagManagerBody></GoogleTagManagerBody>
-<!-- /GTM BODY -->
 
 <style lang="scss">
   /* https://github.com/Andy-set-studio/modern-css-reset */
