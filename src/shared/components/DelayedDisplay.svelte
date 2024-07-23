@@ -2,11 +2,27 @@
   import { actionWaitTime } from "@consts/consts";
   import { onMount } from "svelte";
 
-  export let delayTime: number = actionWaitTime;
+  //export let delayTime: number = actionWaitTime;
+  export const delayTime: number = actionWaitTime;
 
   let isRendered = false;
 
-  onMount(() => setTimeout(() => (isRendered = true), delayTime));
+  export const isDelay:boolean = false;
+
+  // スクロールがずれるためデフォルトではDelayなくす
+  onMount( () => {
+    if( isDelay ){
+      setTimeout( () => (isRendered = true), delayTime );
+    }
+    else{
+      isRendered = true;
+    }
+  });
+  // onMount(
+  //   () => setTimeout(
+  //     () => (isRendered = true), delayTime
+  //   )
+  // );
 </script>
 
 {#if isRendered}
