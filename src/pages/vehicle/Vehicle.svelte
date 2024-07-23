@@ -320,11 +320,13 @@
       ...formDataObject
     };
 
-   // Initiate both async functions in parallel without awaiting them
-   Promise.all([
-    appraisalRequest(reqDetail).catch(err => console.error("Appraisal request failed:", err)),
-    triggerMail(reqMail).catch(err => console.error("Trigger mail failed:", err))
-  ]);
+
+    appraisalRequest(reqDetail).catch((err) =>
+      console.error("Appraisal request failed:", err),
+    );
+    await triggerMail(reqMail).catch((err) =>
+      console.error("Trigger mail failed:", err),
+    );
 
     // Redirect immediately
     const location = `https://ctn-net.jp/kaitori/car/ad4/thanks.php?aid=${ctn_wpc_f7_counter}`;
@@ -1311,9 +1313,7 @@
         <InputWrap>
           <Input
             slot="input"
-            type="number"
             name="tel"
-            inputmode="numeric"
             placeholder="09012345678(ハイフン無し)"
             cautionMessage="査定結果のご連絡やご本人様確認のために使用いたします"
             readonly={isShowInputEnd && isNotModifyMode}
@@ -1352,20 +1352,12 @@
             variant="decision"
             disabled={isClickAuthCodeRequest && isRequestAuthCode}
             on:click={async () => {
-              const savedParams = sessionStorage.getItem("savedParameters");
-              const rawResponseData = localStorage.getItem("responseData");
-
-              let response_id;
-              if (rawResponseData !== null) {
-                response_id = parseInt(rawResponseData, 10);
-                if (isNaN(response_id)) response_id = undefined;
-              }
-
+              const formData = sessionStorage.getItem("appraisal_form_data");
               let remoteIP;
-              if (savedParams) {
+              if (formData) {
                 try {
-                  const savedParamObj = JSON.parse(savedParams);
-                  remoteIP = savedParamObj?.userIP;
+                  const savedParamObj = JSON.parse(formData);
+                  remoteIP = savedParamObj?.ip;
                 } catch (error) {
                   console.error("Failed to parse saved parameters:", error);
                 }
@@ -1378,7 +1370,6 @@
                 await requestAuthCode(
                   $formStore.tel,
                   $formStore.youremail,
-                  response_id,
                   remoteIP,
                   $formStore.yourname,
                 );
