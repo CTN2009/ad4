@@ -5,10 +5,11 @@
   export let placeholder: string = "";
   export let required: boolean = false;
   export let readonly: boolean = false;
-  export let type: "text" | "checkbox" | "number" = "text";
+  export let type: "text" | "email" | "url" | "checkbox" | "number" = "text";
   export let replaceKeyword: string = "";
   export let cautionMessage: string = "";
   export let autocomplete: string = "";
+
 
   $: {
     if (replaceKeyword !== "" && typeof value === "string") {
@@ -35,6 +36,34 @@
   >
   {#if cautionMessage != ""}
     <small>{cautionMessage}</small>
+  {/if}
+  {#if type === "email"}
+    <input
+      type="email"
+      inputmode="email"
+      bind:value
+      on:keypress
+      on:keyup
+      on:input
+      on:change
+      {...props}
+      {readonly}
+      {autocomplete}
+    />
+  {/if}
+  {#if type === "url"}
+    <input
+      type="url"
+      inputmode="url"
+      bind:value
+      on:keypress
+      on:keyup
+      on:input
+      on:change
+      {...props}
+      {readonly}
+      {autocomplete}
+    />
   {/if}
   {#if type === "text"}
     <input

@@ -1323,8 +1323,9 @@
       <DelayedDisplay>
         <InputWrap>
           <Input
-            slot="input"
             name="your-email"
+            type="url"
+            slot="input"
             placeholder="example@gmail.com"
             readonly={isShowInputEnd && isNotModifyMode}
             required
@@ -1351,6 +1352,7 @@
         <InputWrap>
           <Input
             slot="input"
+            type="number"
             name="tel"
             inputmode="numeric"
             placeholder="09012345678(ハイフン無し)"
@@ -1459,7 +1461,7 @@
           <Input
             slot="input"
             name="sms-num"
-            type="text"
+            type="number"
             bind:value={authCode}
             label="認証番号"
             on:keypress={authCodeInputHandler}
