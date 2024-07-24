@@ -184,7 +184,7 @@
     background-color: #fff;
     color: #333;
     font-size: 1.6rem;
-    font-family: "Roboto", "Helvetica Neue", "Hiragino Kaku Gothic ProN",
+    font-family: 'Noto Sans JP', "Helvetica Neue", "Hiragino Kaku Gothic ProN",
       "Hiragino Sans", "BIZ UDPGothic", "Meiryo", sans-serif;
     line-height: calc(19 / 16);
   }
