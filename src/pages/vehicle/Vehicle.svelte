@@ -507,7 +507,7 @@
   $: if (isShowPersonalInfoRequest) {
     // handleScrollToTop({ isWait: false });
     setTimeout(() => {
-      //isShowPersonalInfoRequestSecond = true;
+      // isShowPersonalInfoRequestSecond = true;
       isVehicleRequest = true;
     }, actionWaitTime);
   }
@@ -705,7 +705,7 @@
   // 購入者情報完了
   $: if (isPersonalInputComplete) {
     isEngineCapacityRequest = true;
-    handleScrollToBottom({ waitTime: 750, compensation: 200 });
+    // handleScrollToBottom({ waitTime: 750, compensation: 200 });
   }
 
   $: if (candidateDate === null) {
