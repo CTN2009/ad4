@@ -3,12 +3,14 @@ export type AppraisalFormData = {
 	saved_utm_param:string,
 	ip:string,
 	fpc:string,
-	'your-subject': string,
 	month: string,
 	Meka: string,
 	CarName: string,
 	caryear: string,
-	carversion: string
+	carversion: string,
+	host?: string,
+	userAgent?: string,
+	requestURL?: string
 
 };
 

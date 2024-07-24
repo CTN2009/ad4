@@ -3,7 +3,6 @@
   import { onMount } from "svelte";
   import { push } from "svelte-spa-router";
   //import { getStores, navigating, page, updated } from '$app/stores';
-  import { registAppraisalApi } from "@scripts/registAppraisalApi";
   import { type AppraisalFormData } from "@scripts/registAppraisalApi";
 
   const tabBrand = "brand";
@@ -51,46 +50,63 @@
   // Fetch JSON data
   //-----------------------------
   const fetchVehicleJson = async function () {
-    try {
-      const response = await fetch(
-        "https://ctn-uploads.s3.ap-northeast-1.amazonaws.com/latest.json",
-      );
-      if (!response.ok) {
-        throw new Error("Network error!!(fetchVehicleJson)");
-      }
-      data = await response.json();
-      if (import.meta.env.MODE.match(/dev/)) {
-        console.log(data);
-      }
-      fetchedJson = data;
-      showPopupFromBeginning();
-      return data;
-    } catch (err) {
-      console.error("エラー：", err.message);
-    } finally {
-      loading = false;
+  try {
+    // Generate an array of URLs for the JSON files
+    const urls = Array.from({ length: 96 }, (_, i) => 
+      `https://d3jbkxdk2o6mwn.cloudfront.net/vehicle-master-data/${i + 1}.json`
+    );
+
+    // Create an array of fetch requests with the appropriate headers
+    const fetchRequests = urls.map(url =>
+      fetch(url, {
+        headers: {
+          "Accept-Encoding": "gzip,br"
+        }
+      })
+    );
+
+    // Wait for all fetch requests to resolve
+    const responses = await Promise.all(fetchRequests);
+
+    // Parse all successful JSON responses, ignoring failed requests
+    const dataPromises = responses.map(response =>
+      response.ok ? response.json() : Promise.resolve([])
+    );
+    const dataArray = await Promise.all(dataPromises);
+
+    // Merge all data into a single array
+    const mergedData = dataArray.flat();
+
+    // Debug log if in development mode
+    if (import.meta.env.MODE.match(/dev/)) {
+      console.log(mergedData);
     }
-  };
+
+    fetchedJson = mergedData;
+    showPopupFromBeginning();
+    return mergedData;
+  } catch (err) {
+    console.error("エラー：", err.message);
+  } finally {
+    loading = false;
+  }
+};
 
   //-----------------------------
   // get IP
   //-----------------------------
   const getClientIpAddr = async function () {
-    try {
-      const response = await fetch(
-        "https://ctn-net.jp/kaitori/car/ad2/wp-json/cform/v1/access",
-      );
-      if (!response.ok) {
-        throw new Error("Network error!!(getClientIpAddr)");
-      }
-      //let data = await response.text();
-      clientIpAddr = await response.text();
-    } catch (err) {
-      clientIpAddr = "0.0.0.0";
-
-      console.error("エラー：", err.message);
+  try {
+    const response = await fetch("https://api.ipify.org?format=text");
+    if (!response.ok) {
+      throw new Error("Network error!!(getClientIpAddr)");
     }
-  };
+    clientIpAddr = await response.text();
+  } catch (err) {
+    clientIpAddr = "0.0.0.0";
+    console.error("エラー");
+  }
+};
 
   //-----------------------
   // Brand
@@ -379,45 +395,15 @@
   const handleSelectVersion = (version: string) => {
     currentVersion = version;
 
-    // 車種
-    // type VehicleJson = {
-    //   Meka: string;
-    //   CarName: string;
-    //   caryear: string;
-    //   carversion: string;
-    //   ctn_wpc_f7_counter: string;
-    // };
+    const url = new URL(window.location.href);
+    const params = url.searchParams;
 
-    // IPAddr
-    type IPAddrJson = {
-      host: string;
-      userAgent: string;
-      userIP: string;
-      requestURL: string;
-      saved_utm_param: string;
-      fpc: string;
-    };
-    let url = new URL(window.location.href);
-    let params = url.searchParams;
+    const utmKeys = ["utm_source", "utm_campaign"];
+    const utmString = utmKeys
+      .map(key => params.get(key))
+      .filter(value => value !== null);
 
-    let utmString: string[] = [];
-
-    if (params.get("utm_source")) {
-      utmString.push(String(params.get("utm_source")));
-    }
-    if (params.get("utm_campaign")) {
-      utmString.push(String(params.get("utm_campaign")));
-    }
-
-    const curIp: IPAddrJson = {
-      host: "https://ctn-net.jp/kaitori/car/ad3",
-      userAgent: navigator.userAgent,
-      userIP: clientIpAddr,
-      requestURL: "https://ctn-net.jp/kaitori/car/ad3/cform",
-      saved_utm_param: utmString.join(" "),
-      fpc: String(params.get("fpc")),
-    };
-    sessionStorage.setItem("savedParameters", JSON.stringify(curIp));
+    const fpc = params.get("fpc") || "";
 
     // AppraisalFormData
     const getYmd = () => {
@@ -428,30 +414,20 @@
       return `${year}${month}${day}`;
     };
 
-    // const curData: VehicleJson = {
-    //   Meka: currentBrand,
-    //   CarName: currentVehicle,
-    //   caryear: currentYear,
-    //   carversion: currentVersion,
-    //   ctn_wpc_f7_counter: getYmd() + cf7dtx_counter(),
-    // };
-
     const appraisal_form_data: AppraisalFormData = {
       ctn_wpc_f7_counter: getYmd() + cf7dtx_counter(),
-      saved_utm_param: curIp.saved_utm_param,
-      ip: curIp.userIP,
-      fpc: curIp.fpc,
-      "your-subject": "",
+      saved_utm_param: utmString.join(" "),
+      ip: clientIpAddr,
+      fpc: fpc,
       month: "",
       Meka: currentBrand,
       CarName: currentVehicle,
       caryear: currentYear,
       carversion: currentVersion,
+      host: "https://ctn-net.jp/kaitori/car/ad4",
+      userAgent: navigator.userAgent,
+      requestURL: "https://ctn-net.jp/kaitori/car/ad4/",
     };
-
-    //selectedVehicle.set(cur);
-    // APIコール
-    let appraisalApiResponse = registAppraisalApi(appraisal_form_data);
 
     // session保存
     sessionStorage.setItem(
