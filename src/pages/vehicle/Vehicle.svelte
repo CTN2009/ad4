@@ -507,7 +507,7 @@
   $: if (isShowPersonalInfoRequest) {
     // handleScrollToTop({ isWait: false });
     setTimeout(() => {
-      isShowPersonalInfoRequestSecond = true;
+      // isShowPersonalInfoRequestSecond = true;
       isVehicleRequest = true;
     }, actionWaitTime);
   }
