@@ -124,6 +124,7 @@
       height: 100%;
       // memo: pc画面での画面サイズ制限
       max-width: 46.5rem;
+      padding-top:193px;
     }
 
     &[data-scroll="start"] {
@@ -139,7 +140,7 @@
     @media (width > 768px) {
       display: block;
       position: fixed;
-      top: 2rem;
+      top: 7rem;
       left: 1rem;
       width: 15vw;
       max-width: 20rem;
