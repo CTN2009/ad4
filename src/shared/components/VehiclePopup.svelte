@@ -1018,7 +1018,7 @@
       z-index: 9999;
       /* height:600px; */
       /*margin: 50px 0;*/
-      top: 50%;
+      top: 59%;
       left: 50%;
       transform: translate(-50%, -50%);
       position: absolute;
@@ -1029,7 +1029,7 @@
     }
     .content-detail {
       background-color: #fff;
-      height: 72vh;
+      height: 50vh;
       overflow-y: scroll;
     }
     .vehicles-content {
@@ -1326,14 +1326,20 @@
     @media (max-width: 992px) {
       .popup-content {
         width: 95%;
-        height: calc(100% - 31px);
+        top: 27%;
+        height: calc(53% - 15px);
       }
+      .content-detail {
+      background-color: #fff;
+      height: 60vh;
+      overflow-y: scroll;
+    }
       .content-detail,.vehicles-content {
-      height: 72vh;
+      height: 54.8vh;
       overflow-y:none;
     }
     .content-tab-year.vehicles-content,.content-tab-version.vehicles-content{
-      height:86vh;
+      height:72vh;
     }
     }
     @media (min-width: 992px) {
