@@ -52,7 +52,7 @@
   const fetchVehicleJson = async function () {
   try {
     // Generate an array of URLs for the JSON files
-    const urls = Array.from({ length: 96 }, (_, i) => 
+    const urls = Array.from({ length: 96 }, (_, i) =>
       `https://d3jbkxdk2o6mwn.cloudfront.net/vehicle-master-data/${i + 1}.json`
     );
 
@@ -1300,11 +1300,95 @@
     }
     @media (max-width: 992px) {
       .popup-content {
+        width: 95%;
+        top: 27%;
+        height: calc(53% - 15px);
       }
+      .content-detail {
+      background-color: #fff;
+      height: 60vh;
+      overflow-y: scroll;
+    }
+      .content-detail,.vehicles-content {
+      height: 54.8vh;
+      overflow-y:none;
+    }
+    .content-tab-year.vehicles-content,.content-tab-version.vehicles-content{
+      height:72vh;
+    }
     }
     @media (min-width: 992px) {
       .popup-content {
+        width: 1020px;
       }
+      .logo-car-item {
+        display: inline-flex;
+        justify-content: center;
+        width: 100%;
+        border-bottom: 1px solid #e5e5e5;
     }
+    ul.modal-block-list li {
+        vertical-align: top;
+        flex: 1 1 33%;
+        text-align: center;
+        margin: 0px 0px 10px;
+        font-size:14px;
+        border-bottom:none;
+        list-style-type: none;
+    }
+    .nihon-car-item {
+        width: 49%;
+        padding: 0 20px;
+        float: left;
+        border-right: 1px solid #DDD;
+    }
+    .world-car-item {
+        width: 49%;
+        padding: 0 16px;
+        float: left;
+    }
+    .link-item-one,.link-item-two,.link-item-three,.link-item-four,.link-item-five,.link-item-six,.link-item-seven,.link-item-eight,.link-item-nine {
+        padding: 10px 40px 10px 40px;
+    }
+    ul.modal-block-list li a img {
+    height: 47px;
+}
+ul.carmodelAnchorList li span a {
+        width: 100%;
+        display: inline-block;
+        color: #333;
+        border-bottom: 3px solid #FFF;
+        background-color:#fff;
+        text-decoration: none !important;
+    }
+    ul.carmodelAnchorList li {
+        font-size: 16px !important;
+        display: inline-block !important;
+        vertical-align: top !important;
+        width: calc(95% / 11) !important;
+        text-align: center !important;
+    }
+    ul.carmodelAnchorList li span {
+        width: 100%;
+        display: inline-block;
+        color: #C0C0C0;
+        font-weight: bold;
+        position: relative;
+        padding:2px 0 ;
+        box-sizing: border-box;
+        background:white;
+        border-top:none;
+    }
+    .link-car-item h4 {
+    font-size: 16px;
+    font-weight: bold;
+    padding: 0 0 5px;
+    margin: 28px 0 20px;
+    border-bottom: 1px solid #DDD;
+}
+.link-car-item{
+  padding-top:40px;
+}
+  }
   </style>
 {/if}
