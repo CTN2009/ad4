@@ -994,7 +994,7 @@
       z-index: 9999;
       /* height:600px; */
       /*margin: 50px 0;*/
-      top: 50%;
+      top: 60%;
       left: 50%;
       transform: translate(-50%, -50%);
       position: absolute;
