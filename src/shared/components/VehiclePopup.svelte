@@ -419,7 +419,6 @@
       saved_utm_param: utmString.join(" "),
       ip: clientIpAddr,
       fpc: fpc,
-      month: "",
       Meka: currentBrand,
       CarName: currentVehicle,
       caryear: currentYear,
