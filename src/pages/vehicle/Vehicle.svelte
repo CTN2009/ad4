@@ -1314,6 +1314,7 @@
         <InputWrap>
           <Input
             slot="input"
+           type="tel"
             name="tel"
             placeholder="09012345678(ハイフン無し)"
             cautionMessage="査定結果のご連絡やご本人様確認のために使用いたします"
