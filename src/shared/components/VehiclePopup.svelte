@@ -1306,15 +1306,16 @@
       }
       .content-detail {
       background-color: #fff;
-      height: 60vh;
+      height:420px;
       overflow-y: scroll;
     }
-      .content-detail,.vehicles-content {
-      height: 54.8vh;
+   .vehicles-content {
+      height: 418px;
       overflow-y:none;
+      padding-bottom:10px;
     }
     .content-tab-year.vehicles-content,.content-tab-version.vehicles-content{
-      height:72vh;
+      height:544px;
     }
     }
     @media (min-width: 992px) {

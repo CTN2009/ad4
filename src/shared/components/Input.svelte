@@ -5,11 +5,10 @@
   export let placeholder: string = "";
   export let required: boolean = false;
   export let readonly: boolean = false;
-  export let type: "text" | "email" | "url" | "checkbox" | "number" = "text";
+  export let type: "text" | "email" | "url" | "checkbox" | "number" | "tel" = "text";
   export let replaceKeyword: string = "";
   export let cautionMessage: string = "";
   export let autocomplete: string = "";
-
 
   $: {
     if (replaceKeyword !== "" && typeof value === "string") {
@@ -31,9 +30,9 @@
 </script>
 
 <div class="inputField">
-  <label class="label" for={name}
-    >{label}{#if required}<span class="required">※必須</span>{/if}</label
-  >
+  <label class="label" for={name}>
+    {label}{#if required}<span class="required">※必須</span>{/if}
+  </label>
   {#if cautionMessage != ""}
     <small>{cautionMessage}</small>
   {/if}
@@ -88,6 +87,20 @@
       on:keyup
       on:change
       on:wheel={disableWheel}
+      {...props}
+      {readonly}
+      {autocomplete}
+    />
+  {/if}
+  {#if type === "tel"}
+    <input
+      type="tel"
+      inputmode="tel"
+      bind:value
+      on:keypress
+      on:input
+      on:keyup
+      on:change
       {...props}
       {readonly}
       {autocomplete}
