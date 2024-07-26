@@ -3,7 +3,6 @@
   import { onMount } from "svelte";
   import { push } from "svelte-spa-router";
   //import { getStores, navigating, page, updated } from '$app/stores';
-  import { registAppraisalApi } from "@scripts/registAppraisalApi";
   import { type AppraisalFormData } from "@scripts/registAppraisalApi";
 
   const tabBrand = "brand";
@@ -51,46 +50,63 @@
   // Fetch JSON data
   //-----------------------------
   const fetchVehicleJson = async function () {
-    try {
-      const response = await fetch(
-        "https://ctn-uploads.s3.ap-northeast-1.amazonaws.com/latest.json",
-      );
-      if (!response.ok) {
-        throw new Error("Network error!!(fetchVehicleJson)");
-      }
-      data = await response.json();
-      if (import.meta.env.MODE.match(/dev/)) {
-        console.log(data);
-      }
-      fetchedJson = data;
-      showPopupFromBeginning();
-      return data;
-    } catch (err) {
-      console.error("エラー：", err.message);
-    } finally {
-      loading = false;
+  try {
+    // Generate an array of URLs for the JSON files
+    const urls = Array.from({ length: 96 }, (_, i) =>
+      `https://d3jbkxdk2o6mwn.cloudfront.net/vehicle-master-data/${i + 1}.json`
+    );
+
+    // Create an array of fetch requests with the appropriate headers
+    const fetchRequests = urls.map(url =>
+      fetch(url, {
+        headers: {
+          "Accept-Encoding": "gzip,br"
+        }
+      })
+    );
+
+    // Wait for all fetch requests to resolve
+    const responses = await Promise.all(fetchRequests);
+
+    // Parse all successful JSON responses, ignoring failed requests
+    const dataPromises = responses.map(response =>
+      response.ok ? response.json() : Promise.resolve([])
+    );
+    const dataArray = await Promise.all(dataPromises);
+
+    // Merge all data into a single array
+    const mergedData = dataArray.flat();
+
+    // Debug log if in development mode
+    if (import.meta.env.MODE.match(/dev/)) {
+      console.log(mergedData);
     }
-  };
+
+    fetchedJson = mergedData;
+    showPopupFromBeginning();
+    return mergedData;
+  } catch (err) {
+    console.error("エラー：", err.message);
+  } finally {
+    loading = false;
+  }
+};
 
   //-----------------------------
   // get IP
   //-----------------------------
   const getClientIpAddr = async function () {
-    try {
-      const response = await fetch(
-        "https://ctn-net.jp/kaitori/car/ad2/wp-json/cform/v1/access",
-      );
-      if (!response.ok) {
-        throw new Error("Network error!!(getClientIpAddr)");
-      }
-      //let data = await response.text();
-      clientIpAddr = await response.text();
-    } catch (err) {
-      clientIpAddr = "0.0.0.0";
-
-      console.error("エラー：", err.message);
+  try {
+    const response = await fetch("https://api.ipify.org?format=text");
+    if (!response.ok) {
+      throw new Error("Network error!!(getClientIpAddr)");
     }
-  };
+    clientIpAddr = await response.text();
+  } catch (err) {
+    clientIpAddr = "0.0.0.0";
+    console.error("エラー");
+  }
+};
 
   //-----------------------
   // Brand
@@ -379,45 +395,15 @@
   const handleSelectVersion = (version: string) => {
     currentVersion = version;
 
-    // 車種
-    // type VehicleJson = {
-    //   Meka: string;
-    //   CarName: string;
-    //   caryear: string;
-    //   carversion: string;
-    //   ctn_wpc_f7_counter: string;
-    // };
+    const url = new URL(window.location.href);
+    const params = url.searchParams;
 
-    // IPAddr
-    type IPAddrJson = {
-      host: string;
-      userAgent: string;
-      userIP: string;
-      requestURL: string;
-      saved_utm_param: string;
-      fpc: string;
-    };
-    let url = new URL(window.location.href);
-    let params = url.searchParams;
+    const utmKeys = ["utm_source", "utm_campaign"];
+    const utmString = utmKeys
+      .map(key => params.get(key))
+      .filter(value => value !== null);
 
-    let utmString: string[] = [];
-
-    if (params.get("utm_source")) {
-      utmString.push(String(params.get("utm_source")));
-    }
-    if (params.get("utm_campaign")) {
-      utmString.push(String(params.get("utm_campaign")));
-    }
-
-    const curIp: IPAddrJson = {
-      host: "https://ctn-net.jp/kaitori/car/ad3",
-      userAgent: navigator.userAgent,
-      userIP: clientIpAddr,
-      requestURL: "https://ctn-net.jp/kaitori/car/ad3/cform",
-      saved_utm_param: utmString.join(" "),
-      fpc: String(params.get("fpc")),
-    };
-    sessionStorage.setItem("savedParameters", JSON.stringify(curIp));
+    const fpc = params.get("fpc") || "";
 
     // AppraisalFormData
     const getYmd = () => {
@@ -428,30 +414,20 @@
       return `${year}${month}${day}`;
     };
 
-    // const curData: VehicleJson = {
-    //   Meka: currentBrand,
-    //   CarName: currentVehicle,
-    //   caryear: currentYear,
-    //   carversion: currentVersion,
-    //   ctn_wpc_f7_counter: getYmd() + cf7dtx_counter(),
-    // };
-
     const appraisal_form_data: AppraisalFormData = {
       ctn_wpc_f7_counter: getYmd() + cf7dtx_counter(),
-      saved_utm_param: curIp.saved_utm_param,
-      ip: curIp.userIP,
-      fpc: curIp.fpc,
-      "your-subject": "",
+      saved_utm_param: utmString.join(" "),
+      ip: clientIpAddr,
+      fpc: fpc,
       month: "",
       Meka: currentBrand,
       CarName: currentVehicle,
       caryear: currentYear,
       carversion: currentVersion,
+      host: "https://ctn-net.jp/kaitori/car/ad4",
+      userAgent: navigator.userAgent,
+      requestURL: "https://ctn-net.jp/kaitori/car/ad4/",
     };
-
-    //selectedVehicle.set(cur);
-    // APIコール
-    let appraisalApiResponse = registAppraisalApi(appraisal_form_data);
 
     // session保存
     sessionStorage.setItem(
@@ -1022,7 +998,7 @@
       z-index: 9999;
       /* height:600px; */
       /*margin: 50px 0;*/
-      top: 50%;
+      top: 60%;
       left: 50%;
       transform: translate(-50%, -50%);
       position: absolute;
@@ -1328,11 +1304,96 @@
     }
     @media (max-width: 992px) {
       .popup-content {
+        width: 95%;
+        top: 27%;
+        height: calc(53% - 15px);
       }
+      .content-detail {
+      background-color: #fff;
+      height:420px;
+      overflow-y: scroll;
+    }
+   .vehicles-content {
+      height: 418px;
+      overflow-y:none;
+      padding-bottom:10px;
+    }
+    .content-tab-year.vehicles-content,.content-tab-version.vehicles-content{
+      height:544px;
+    }
     }
     @media (min-width: 992px) {
       .popup-content {
+        width: 1020px;
       }
+      .logo-car-item {
+        display: inline-flex;
+        justify-content: center;
+        width: 100%;
+        border-bottom: 1px solid #e5e5e5;
     }
+    ul.modal-block-list li {
+        vertical-align: top;
+        flex: 1 1 33%;
+        text-align: center;
+        margin: 0px 0px 10px;
+        font-size:14px;
+        border-bottom:none;
+        list-style-type: none;
+    }
+    .nihon-car-item {
+        width: 49%;
+        padding: 0 20px;
+        float: left;
+        border-right: 1px solid #DDD;
+    }
+    .world-car-item {
+        width: 49%;
+        padding: 0 16px;
+        float: left;
+    }
+    .link-item-one,.link-item-two,.link-item-three,.link-item-four,.link-item-five,.link-item-six,.link-item-seven,.link-item-eight,.link-item-nine {
+        padding: 10px 40px 10px 40px;
+    }
+    ul.modal-block-list li a img {
+    height: 47px;
+}
+ul.carmodelAnchorList li span a {
+        width: 100%;
+        display: inline-block;
+        color: #333;
+        border-bottom: 3px solid #FFF;
+        background-color:#fff;
+        text-decoration: none !important;
+    }
+    ul.carmodelAnchorList li {
+        font-size: 16px !important;
+        display: inline-block !important;
+        vertical-align: top !important;
+        width: calc(95% / 11) !important;
+        text-align: center !important;
+    }
+    ul.carmodelAnchorList li span {
+        width: 100%;
+        display: inline-block;
+        color: #C0C0C0;
+        font-weight: bold;
+        position: relative;
+        padding:2px 0 ;
+        box-sizing: border-box;
+        background:white;
+        border-top:none;
+    }
+    .link-car-item h4 {
+    font-size: 16px;
+    font-weight: bold;
+    padding: 0 0 5px;
+    margin: 28px 0 20px;
+    border-bottom: 1px solid #DDD;
+}
+.link-car-item{
+  padding-top:40px;
+}
+  }
   </style>
 {/if}

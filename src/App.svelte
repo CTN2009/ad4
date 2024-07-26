@@ -56,18 +56,14 @@
     // Ad Common
     if (!addScript_adCommon) {
       addScript_adCommon = true;
-      (function () {
-        var uqid = "3ded5G135605b816";
-        var gid = "5";
-        var a = document.createElement("script");
-        a.dataset.uqid = uqid;
-        a.dataset.gid = gid;
-        a.id = "afadfpc-3ded5G135605b816gid5-" + Date.now();
-        a.src =
-          "//ac.ads-manage.com/fpc/cookie_js.php?scriptId=" +
-          encodeURIComponent(a.id);
-        document.head.appendChild(a);
-      })();
+      (function(){
+var uqid = "3ded5G135605b816";
+var cid  = "10";
+var a=document.createElement("script");
+a.dataset.uqid=uqid;a.dataset.cid=cid;a.id="afadfpc-3ded5G135605b816cid10-"+Date.now();
+a.src="//ac.ads-manage.com/fpc/cookie_js.php?scriptId="+encodeURIComponent(a.id);
+document.head.appendChild(a);
+})();
     }
   });
 
@@ -184,7 +180,7 @@
     background-color: #fff;
     color: #333;
     font-size: 1.6rem;
-    font-family: "Roboto", "Helvetica Neue", "Hiragino Kaku Gothic ProN",
+    font-family: 'Noto Sans JP', "Helvetica Neue", "Hiragino Kaku Gothic ProN",
       "Hiragino Sans", "BIZ UDPGothic", "Meiryo", sans-serif;
     line-height: calc(19 / 16);
   }

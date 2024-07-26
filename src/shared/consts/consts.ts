@@ -35,22 +35,22 @@ postUrl = `/kaitori/car/ad3/thanks/?aid=${year}${monthString}${dayString}${rando
 export const zipcodeApiUrl =
   "https://zipcloud.ibsnet.co.jp/api/search?zipcode=";
 
-const phoneAutUrlBase =
+const legacyAPIBaseURL =
   import.meta.env.MODE === "development"
     ? // 検証環境URL
       "https://d3hr6jxhk0c2mf.cloudfront.net/api/v1/appraisal"
     : // 本番環境URL
       "https://d3ul0twcmnvo72.cloudfront.net/api/v1/appraisal";
 
-const newAPIBase =
+const newAPIBaseURL =
   import.meta.env.MODE === "development"
     ? "https://d3hr6jxhk0c2mf.cloudfront.net/api/v2/appraisal"
     : "https://d3ul0twcmnvo72.cloudfront.net/api/v2/appraisal";
 
-export const sendAuthCodeUrl = `${phoneAutUrlBase}/pin`;
-export const authSmsCodeUrl = `${phoneAutUrlBase}/vpin`;
-export const triggerMailUrl = `${newAPIBase}/emails`;
-export const appraisalReqUrl = `${phoneAutUrlBase}/detail`;
+export const sendAuthCodeUrl = `${legacyAPIBaseURL}/pin`;
+export const authSmsCodeUrl = `${legacyAPIBaseURL}/vpin`;
+export const triggerMailUrl = `${newAPIBaseURL}/emails`;
+export const appraisalReqUrl = `${legacyAPIBaseURL}/core/lead`;
 
 export const getImageUrl = (relativeUrl: string): string => {
   if (import.meta.env.MODE === "development") {
@@ -176,7 +176,7 @@ export const colorOptions = [
   },
   {
     name: "gold",
-    value: "ゴールド",
+    value: "ブロンズ",
     imgUrl: getImageUrl("/image/car-info-options/gold.png"),
   },
 

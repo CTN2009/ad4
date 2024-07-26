@@ -3,9 +3,9 @@ import { sendAuthCodeUrl } from "@consts/consts";
 type SendAuthCode = {
   content: string;
   email: string;
-  id: number | undefined;
-  ip: string | undefined;
+  ip: string;
   name: string;
+  id: null;
 };
 
 const headers = new Headers({
@@ -23,8 +23,7 @@ const requestOptions = (body: SendAuthCode) => {
 const requestAuthCode = async (
   phoneNumber: string,
   email: string,
-  id: number | undefined,
-  ip: string | undefined,
+  ip: string,
   name: string
 ): Promise<[boolean, boolean]> => {
   // 本番環境以外ではセキュリティ設定によりapiが呼び出せないため固定でtrueを返却する
@@ -36,7 +35,7 @@ const requestAuthCode = async (
   }
 
   return new Promise((resolve, _) => {
-    fetch(sendAuthCodeUrl, requestOptions({ content: phoneNumber, name: name, email: email, ip: ip, id: id }))
+    fetch(sendAuthCodeUrl, requestOptions({ content: phoneNumber, name: name, email: email, ip: ip, id: null }))
       .then((response) => {
         if (response.ok) {
           resolve([true, false]);

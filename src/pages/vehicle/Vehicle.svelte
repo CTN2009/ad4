@@ -232,9 +232,7 @@
     modalTitleVehicle = event.detail.message;
   };
   const onFormSubmit = async () => {
-    var jsonString = sessionStorage.getItem("appraisal_form_data");
-    var savedParams = sessionStorage.getItem("savedParameters");
-    var rawResponseData = localStorage.getItem("responseData");
+    var formData = sessionStorage.getItem("appraisal_form_data");
     let zipcode = $formStore.zipcode;
 
     // Format the zipcode if it's in the incorrect format
@@ -242,34 +240,13 @@
       zipcode = zipcode.slice(0, 3) + "-" + zipcode.slice(3);
     }
 
-    var response_id =
-      rawResponseData !== null ? parseInt(rawResponseData, 10) : undefined;
-
-    // Parse the JSON string into an object
-    var jsonObject = JSON.parse(jsonString!);
-    var savedParamObj = JSON.parse(savedParams!);
+    var formDataObject = JSON.parse(formData!);
 
     // Access each value in the object
-    var Meka = jsonObject?.Meka;
-    var CarName = jsonObject?.CarName;
-    var caryear = jsonObject?.caryear;
-    var carversion = jsonObject?.carversion;
-    var ctn_wpc_f7_counter = jsonObject?.ctn_wpc_f7_counter;
-
-    var host = savedParamObj?.host;
-    var userAgent = savedParamObj?.userAgent;
-    var remoteIP = savedParamObj?.userIP;
-    var requestURL = savedParamObj?.requestURL;
-    var saved_utm_param = savedParamObj?.savedUtmParameters;
-    var fpc = savedParamObj?.fpc;
+    var ctn_wpc_f7_counter = formDataObject?.ctn_wpc_f7_counter;
 
     //TODO: After confirmation use the generatePayload function as a best practise (generatePayload.ts)
     const reqMail = {
-      ctn_wpc_f7_counter: ctn_wpc_f7_counter,
-      Meka: Meka,
-      CarName: CarName,
-      caryear: caryear,
-      carversion: carversion,
       carmet: isRun,
       color: colorAnswerText.length ? colorAnswerText[0] : "",
       month: isDesiredTime,
@@ -284,13 +261,6 @@
       tel: $formStore.tel,
       form_pref: $formStore.pref,
       form_address: $formStore.mailaddress,
-      "cf7msm-no-ss": "",
-      cf7msm_options: '{"last_step":1,"send_email":1}',
-      host: host,
-      userAgent: userAgent,
-      remoteIP: remoteIP,
-      requestURL: requestURL,
-      saved_utm_param: saved_utm_param,
       xilanh: engineCapacity,
       zansai: loan,
       shaken: inspectionDate,
@@ -309,12 +279,12 @@
       sohinmonitor: "",
       sohinsan: "",
       "date-881": formattedCandidateDate,
-      fpc: fpc,
+      remoteIP: formDataObject?.ip,
+      ...formDataObject
     };
 
     const reqDetail = {
-      id: response_id,
-      ctn_wpc_f7_counter: ctn_wpc_f7_counter,
+      type: "ad4",
       carmet: isRun,
       color: colorAnswerText.length ? colorAnswerText[0] : "",
       month: isDesiredTime,
@@ -330,8 +300,6 @@
       tel: $formStore.tel,
       form_pref: $formStore.pref,
       form_address: $formStore.address,
-      "cf7msm-no-ss": "",
-      cf7msm_options: '{"last_step":1,"send_email":1}',
       xilanh: engineCapacity,
       zansai: loan,
       shaken: inspectionDate,
@@ -350,25 +318,19 @@
       sohinmonitor: "",
       sohinsan: "",
       "date-881": formattedCandidateDate,
+      ...formDataObject
     };
 
-    const appraisalResponse = await appraisalRequest(reqDetail);
-    // Check if appraisal was successful and status code is 200 or 201
-    // if (appraisalResponse.success && appraisalResponse.statusCode === 200) {
-    //   await triggerMail(reqMail);
-    //   const location: string = `https://ctn-net.jp/kaitori/car/ad3/thanks/?aid=${ctn_wpc_f7_counter}`;
 
-    //   // Clear the appraisal_form_data from session storage
-    //   sessionStorage.removeItem("appraisal_form_data");
-    //   window.location.href = location;
-    // } else if (appraisalResponse.statusCode === 409) {
-    //   // isDuplicateAppraisal = true;
-    // } else {
-    //   sessionStorage.removeItem("appraisal_form_data");
-    //   window.location.href = "https://ctn-net.jp/kaitori/car/ad3/";
-    // }
-    await triggerMail(reqMail);
-    const location: string = `https://ctn-net.jp/kaitori/car/ad4/thanks.php?aid=${ctn_wpc_f7_counter}`;
+    appraisalRequest(reqDetail).catch((err) =>
+      console.error("Appraisal request failed:", err),
+    );
+    await triggerMail(reqMail).catch((err) =>
+      console.error("Trigger mail failed:", err),
+    );
+
+    // Redirect immediately
+    const location = `https://ctn-net.jp/kaitori/car/ad4/thanks.php?aid=${ctn_wpc_f7_counter}`;
     sessionStorage.removeItem("appraisal_form_data");
     window.location.href = location;
   };
@@ -507,7 +469,7 @@
   $: if (isShowPersonalInfoRequest) {
     // handleScrollToTop({ isWait: false });
     setTimeout(() => {
-      //isShowPersonalInfoRequestSecond = true;
+      // isShowPersonalInfoRequestSecond = true;
       isVehicleRequest = true;
     }, actionWaitTime);
   }
@@ -705,7 +667,7 @@
   // 購入者情報完了
   $: if (isPersonalInputComplete) {
     isEngineCapacityRequest = true;
-    handleScrollToBottom({ waitTime: 750, compensation: 200 });
+    // handleScrollToBottom({ waitTime: 750, compensation: 200 });
   }
 
   $: if (candidateDate === null) {
@@ -799,7 +761,7 @@
         >を選択してください。</ChatBalloons
       >
 
-      <DelayedDisplay>
+      <DelayedDisplay delayTime={800} isDelay={true}>
         <button
           type="button"
           class="selectHandle"
@@ -1352,9 +1314,8 @@
         <InputWrap>
           <Input
             slot="input"
-            type="number"
+           type="tel"
             name="tel"
-            inputmode="numeric"
             placeholder="09012345678(ハイフン無し)"
             cautionMessage="査定結果のご連絡やご本人様確認のために使用いたします"
             readonly={isShowInputEnd && isNotModifyMode}
@@ -1393,20 +1354,12 @@
             variant="decision"
             disabled={isClickAuthCodeRequest && isRequestAuthCode}
             on:click={async () => {
-              const savedParams = sessionStorage.getItem("savedParameters");
-              const rawResponseData = localStorage.getItem("responseData");
-
-              let response_id;
-              if (rawResponseData !== null) {
-                response_id = parseInt(rawResponseData, 10);
-                if (isNaN(response_id)) response_id = undefined;
-              }
-
+              const formData = sessionStorage.getItem("appraisal_form_data");
               let remoteIP;
-              if (savedParams) {
+              if (formData) {
                 try {
-                  const savedParamObj = JSON.parse(savedParams);
-                  remoteIP = savedParamObj?.userIP;
+                  const savedParamObj = JSON.parse(formData);
+                  remoteIP = savedParamObj?.ip;
                 } catch (error) {
                   console.error("Failed to parse saved parameters:", error);
                 }
@@ -1419,7 +1372,6 @@
                 await requestAuthCode(
                   $formStore.tel,
                   $formStore.youremail,
-                  response_id,
                   remoteIP,
                   $formStore.yourname,
                 );
