@@ -514,8 +514,12 @@
   //----------------------
   export const openPopup = () => {
     currentBrand = "";
+    currentVehicle = "";
+    currentYear = "";
+    currentVersion = "";
     currentTabState = "brand";
-
+    versionData = [];
+    yearData = [];
     //document.getElementById("vehiclesField").value = "";
     //document.getElementById("kilometField").value = "";
   };
