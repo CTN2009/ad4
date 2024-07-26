@@ -176,7 +176,7 @@ export const colorOptions = [
   },
   {
     name: "gold",
-    value: "ゴールド",
+    value: "ブロンズ",
     imgUrl: getImageUrl("/image/car-info-options/gold.png"),
   },
 
