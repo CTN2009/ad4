@@ -761,7 +761,7 @@
         >を選択してください。</ChatBalloons
       >
 
-      <DelayedDisplay>
+      <DelayedDisplay delayTime={800} isDelay={true}>
         <button
           type="button"
           class="selectHandle"

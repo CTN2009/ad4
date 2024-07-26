@@ -1,28 +1,18 @@
 <script lang="ts">
-  import { actionWaitTime } from "@consts/consts";
   import { onMount } from "svelte";
 
-  //export let delayTime: number = actionWaitTime;
-  export const delayTime: number = actionWaitTime;
+  export let delayTime: number = 0; // デフォルトの遅延時間を0に設定
+  export let isDelay: boolean = false; // デフォルトの遅延をfalseに設定
 
   let isRendered = false;
 
-  export const isDelay:boolean = false;
-
-  // スクロールがずれるためデフォルトではDelayなくす
-  onMount( () => {
-    if( isDelay ){
-      setTimeout( () => (isRendered = true), delayTime );
-    }
-    else{
+  onMount(() => {
+    if (isDelay) {
+      setTimeout(() => (isRendered = true), delayTime);
+    } else {
       isRendered = true;
     }
   });
-  // onMount(
-  //   () => setTimeout(
-  //     () => (isRendered = true), delayTime
-  //   )
-  // );
 </script>
 
 {#if isRendered}
@@ -31,7 +21,6 @@
   </div>
 {/if}
 
-<!-- DelayedDisplay.svelte -->
 <style lang="scss">
   .fade-in-up {
     animation: fadeInUp 0.5s ease-out;
