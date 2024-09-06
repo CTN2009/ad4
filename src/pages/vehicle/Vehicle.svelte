@@ -262,8 +262,8 @@
       form_pref: $formStore.pref,
       form_address: $formStore.mailaddress,
       xilanh: engineCapacity,
-      zansai: loan,
-      shaken: inspectionDate,
+      // zansai: loan,
+      // shaken: inspectionDate,
       shane: "",
       shapa: "",
       shahe: "",
@@ -278,7 +278,7 @@
       sohinshito: "",
       sohinmonitor: "",
       sohinsan: "",
-      "date-881": formattedCandidateDate,
+      // "date-881": formattedCandidateDate,
       remoteIP: formDataObject?.ip,
       ...formDataObject,
     };
@@ -301,8 +301,8 @@
       form_pref: $formStore.pref,
       form_address: $formStore.address,
       xilanh: engineCapacity,
-      zansai: loan,
-      shaken: inspectionDate,
+      // zansai: loan,
+      // shaken: inspectionDate,
       shane: "",
       shapa: "",
       shahe: "",
@@ -317,7 +317,7 @@
       sohinshito: "",
       sohinmonitor: "",
       sohinsan: "",
-      "date-881": formattedCandidateDate,
+      // "date-881": formattedCandidateDate,
       ...formDataObject,
     };
 
@@ -547,7 +547,7 @@
   }
 
   $: if (isJIsouAnswer) {
-    isInspectionDateRequest = true;
+    isDesiredTimeRequest = true;
     //handleScrollToBottom({ waitTime: 1250 });
     handleScrollToBottom({ isWait: false });
   }
@@ -596,7 +596,7 @@
 
   $: if (isDesiredTimeAnswer) {
     if (isDesiredTime !== "") {
-      isCandidateDateRequest = true;
+      isThankYouMessage = true;
       //handleScrollToBottom({ waitTime: 1250 });
       handleScrollToBottom({ isWait: false });
     }
@@ -1183,7 +1183,7 @@ onMount(() => {
       </ChatBalloons>
     {/if}
 
-    {#if isInspectionDateRequest}
+    <!-- {#if isInspectionDateRequest}
       <ChatBalloons isWait={false}>
         <span class="boldText">次回の車検日</span>はいつになりますか？
       </ChatBalloons>
@@ -1255,7 +1255,7 @@ onMount(() => {
       <ChatBalloons variant="user" isWait={false}>
         <span class="boldText">{loan}</span>。
       </ChatBalloons>
-    {/if}
+    {/if} -->
 
     {#if isDesiredTimeRequest}
       <ChatBalloons isWait={false}>
@@ -1311,7 +1311,7 @@ onMount(() => {
       </ChatBalloons>
     {/if}
 
-    {#if isCandidateDateRequest}
+    <!-- {#if isCandidateDateRequest}
       <div>
         <ChatBalloons isWait={false}>
           <span class="boldText">査定候補日</span>を教えてください
@@ -1329,11 +1329,11 @@ onMount(() => {
       <ChatBalloons variant="user" isWait={false}>
         <span class="boldText">{formattedCandidateDate}</span>です
       </ChatBalloons>
-    {/if}
+    {/if} -->
 
     {#if isThankYouMessage}
       <ChatBalloons>
-        ここまで8項目をご回答いただき、ありがとうございます！
+        ここまで6項目をご回答いただき、ありがとうございます！
       </ChatBalloons>
     {/if}
 
@@ -1393,7 +1393,7 @@ onMount(() => {
         <InputWrap>
           <Input
             type="text"
-            isNumeric={true} 
+            isNumeric={true}
             slot="input"
             name="zipcode"
             className="yourZip"
