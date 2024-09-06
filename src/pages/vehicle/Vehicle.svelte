@@ -262,8 +262,8 @@
       form_pref: $formStore.pref,
       form_address: $formStore.mailaddress,
       xilanh: engineCapacity,
-      zansai: loan,
-      shaken: inspectionDate,
+      // zansai: loan,
+      // shaken: inspectionDate,
       shane: "",
       shapa: "",
       shahe: "",
@@ -278,9 +278,9 @@
       sohinshito: "",
       sohinmonitor: "",
       sohinsan: "",
-      "date-881": formattedCandidateDate,
+      // "date-881": formattedCandidateDate,
       remoteIP: formDataObject?.ip,
-      ...formDataObject
+      ...formDataObject,
     };
 
     const reqDetail = {
@@ -301,8 +301,8 @@
       form_pref: $formStore.pref,
       form_address: $formStore.address,
       xilanh: engineCapacity,
-      zansai: loan,
-      shaken: inspectionDate,
+      // zansai: loan,
+      // shaken: inspectionDate,
       shane: "",
       shapa: "",
       shahe: "",
@@ -317,10 +317,9 @@
       sohinshito: "",
       sohinmonitor: "",
       sohinsan: "",
-      "date-881": formattedCandidateDate,
-      ...formDataObject
+      // "date-881": formattedCandidateDate,
+      ...formDataObject,
     };
-
 
     appraisalRequest(reqDetail).catch((err) =>
       console.error("Appraisal request failed:", err),
@@ -548,7 +547,7 @@
   }
 
   $: if (isJIsouAnswer) {
-    isInspectionDateRequest = true;
+    isDesiredTimeRequest = true;
     //handleScrollToBottom({ waitTime: 1250 });
     handleScrollToBottom({ isWait: false });
   }
@@ -597,7 +596,7 @@
 
   $: if (isDesiredTimeAnswer) {
     if (isDesiredTime !== "") {
-      isCandidateDateRequest = true;
+      isThankYouMessage = true;
       //handleScrollToBottom({ waitTime: 1250 });
       handleScrollToBottom({ isWait: false });
     }
@@ -697,6 +696,207 @@
     );
   }
 
+
+// GTM用のデータレイヤーイベントをプッシュする関数
+function pushToDataLayer(event, eventName, elementClasses, elementCategory) {
+  const detail = event.detail || {};
+
+  if (!event.target && !detail.target) {
+    return;
+  }
+
+  const targetElement = event.target || detail.target;
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: eventName,
+    elementClasses: elementClasses || targetElement.className,
+    elementId: targetElement.id || "",
+    elementCategory: elementCategory || "default_category",
+  });
+}
+
+function observeDOMChanges() {
+  console.log("Starting to observe DOM changes...");
+  const observer = new MutationObserver((mutations) => {
+    for (const mutation of mutations) {
+
+      if (mutation.type === "childList") {
+        // すべての追加されたノードをチェック
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType === 1) {
+            // nodeType 1 は ELEMENT_NODE を意味します
+            if (node.classList.contains("optionWrap")) {
+              attachClickListener(node);
+            }
+
+            if (node.classList.contains("dateContent")) {
+              attachClickListener(node);
+            }
+
+            if (node.classList.contains("car_name")) {
+              addShashuClickClass(node);
+            }
+
+            // content-tab-year クラスを持つ要素が追加された場合
+            if (node.classList.contains("year_name")) {
+              addYearClickClass(node); // aタグにyearclickクラスを追加
+            }
+
+            // content-tab-version クラスを持つ要素が追加された場合
+            if (node.classList.contains("content-tab-version")) {
+              addVersionClickClass(node); // aタグにversionclickクラスを追加
+            }
+
+            // 子要素にも `optionWrap` や `dateContent` が含まれている可能性があるため、クエリを実行
+            const nestedOptionWraps = node.querySelectorAll(".optionWrap");
+            nestedOptionWraps.forEach((nestedNode) => {
+              attachClickListener(nestedNode);
+            });
+
+            const nestedDateContents = node.querySelectorAll(".dateContent");
+            nestedDateContents.forEach((nestedNode) => {
+              attachClickListener(nestedNode);
+            });
+          }
+        });
+
+        const selectionContentElement =
+          document.querySelector(".selectionContent");
+        if (selectionContentElement) {
+          attachClickListener(selectionContentElement);
+        }
+      }
+    }
+  });
+
+  observer.observe(document.body, { childList: true, subtree: true });
+}
+
+function attachClickListener(element) {
+  element.addEventListener("click", (event) => {
+    const saleTimingElement = event.target.closest(".sale_timing");
+    if (saleTimingElement) {
+      pushToDataLayer(event, "saleTimingClick", "sale_timing", "sale_timing");
+    }
+
+    const loneClickElement = event.target.closest(".lone_click");
+    if (loneClickElement) {
+      pushToDataLayer(event, "loneClick", "lone_click", "lone_click");
+    }
+
+    const colorSelectElement = event.target.closest(".svelte-11lqw36");
+    if (colorSelectElement) {
+      pushToDataLayer(
+        event,
+        "colorSelect",
+        "svelte-11lqw36",
+        "svelte-11lqw36",
+      );
+    }
+
+    const historySelectElement = event.target.closest(".history_click");
+    if (historySelectElement) {
+      pushToDataLayer(
+        event,
+        "history_click",
+        "history_click",
+        "history_click",
+      );
+    }
+
+    const distanceSelectElement = event.target.closest(".distance_click");
+    if (distanceSelectElement) {
+      pushToDataLayer(
+        event,
+        "distance_click",
+        "distance_click",
+        "distance_click",
+      );
+    }
+
+    const shakenSelectElement = event.target.closest(".shaken_click");
+    if (shakenSelectElement) {
+      pushToDataLayer(event, "shaken_click", "shaken_click", "shaken_click");
+    }
+
+    const dateContentElement = event.target.closest(".dateContent");
+    if (dateContentElement) {
+      pushToDataLayer(event, "dateContentClick", "dateContent", "dateContent");
+    }
+
+    const pickerElement = event.target.closest(".picker");
+    if (pickerElement) {
+      pushToDataLayer(event, "pickerClick", "picker", "picker");
+    }
+
+    const NameElement = event.target.closest(".yourName");
+    if (NameElement) {
+      pushToDataLayer(event, "NameContentClick", "yourName", "yourName");
+    }
+
+    const ZipElement = event.target.closest(".yourZip");
+    if (ZipElement) {
+      pushToDataLayer(event, "ZipContentClick", "yourZip", "yourZip");
+    }
+
+    const AddressElement = event.target.closest(".youraddress");
+    if (AddressElement) {
+      pushToDataLayer(
+        event,
+        "AddressContentClick",
+        "youraddress",
+        "youraddress",
+      );
+    }
+
+    const EmailElement = event.target.closest(".yourEmail");
+    if (EmailElement) {
+      pushToDataLayer(event, "EmailContentClick", "yourEmail", "yourEmail");
+    }
+
+    const TelElement = event.target.closest(".yourtel");
+    if (TelElement) {
+      pushToDataLayer(event, "telContentClick", "yourtel", "yourtel");
+    }
+  });
+}
+
+// すべての `a` タグに `shashu_click` クラスを付与する関数
+function addShashuClickClass(element) {
+  const links = element.querySelectorAll('a');
+  links.forEach((link) => {
+    link.classList.add('shashu_click');
+  });
+}
+
+// すべての `a` タグに `yearclick` クラスを付与する関数
+function addYearClickClass(element) {
+  if (element.classList.contains('year_name')) {
+    const links = element.querySelectorAll("a");
+    links.forEach((link) => {
+      link.classList.add("yearclick");
+    });
+  }
+}
+
+// すべての `a` タグに `versionclick` クラスを付与し、`yearclick` クラスを削除する関数
+function addVersionClickClass(element) {
+  const links = element.querySelectorAll("a");
+  links.forEach((link) => {
+    link.classList.add("versionclick");
+
+    // もし `yearclick` クラスがあれば削除
+    if (link.classList.contains("yearclick")) {
+      link.classList.remove("yearclick");
+    }
+  });
+}
+
+onMount(() => {
+  observeDOMChanges(); // ページロード時にDOMの変化を監視開始
+});
+
+
   // 共通関数
   // 複数選択肢の場合、画面上に表示する文言を取得
   const getMultipleOptionsAnswer = (
@@ -783,41 +983,6 @@
         on:selectedVehicle={selectedVehiclePopup}
         on:changeTitle={changeTitleVehiclePopup}
       ></VehiclePopup>
-
-      <!--
-      <Modal
-        bind:show={showVehicleModal}
-        {confirmBtnText}
-        hasError={!isUnmatchedInterior && vehicleAnswerText.length == 0}
-        errorMessage="{modalTitleVehicle}を選択してください。"
-      >
-        <div slot="itemName">
-          <h2>
-            {modalTitleVehicle}
-          </h2>
-        </div>
-        <div slot="selectionContent">
-          <VehiclePopup
-            on:selectedVehicle={selectedVehiclePopup}
-            on:changeTitle={changeTitleVehiclePopup}
-          ></VehiclePopup>-->
-      <!--
-          <div
-            class="selectionContent scroll"
-            data-grid-row="3"
-            data-grid-tile="true"
-          >
-            {#each colorOptions as option}
-              <CarInfoMultipleSelectOptions
-                value={option.value}
-                imgUrl={option.imgUrl}
-                bind:group={vehicleAnswerText}
-                on:click={handleCheckboxChangeVehicle}
-              ></CarInfoMultipleSelectOptions>
-            {/each}
-          </div>-->
-      <!--</div>
-      </Modal>-->
     {/if}
     {#if isVehicleAnswer}
       <ChatBalloons variant="user" isWait={false}>
@@ -866,6 +1031,7 @@
             {#each colorOptions as option}
               <CarInfoMultipleSelectOptions
                 value={option.value}
+                className="color_click"
                 imgUrl={option.imgUrl}
                 bind:group={colorAnswerText}
                 on:click={handleCheckboxChange}
@@ -926,6 +1092,7 @@
           {#each runOptions.value as option}
             <CarInfoSingleSelectOption
               value={option}
+              className="distance_click"
               bind:selectedOptions={isRun}
               on:click={handleCheckboxChangeRun}
             ></CarInfoSingleSelectOption>
@@ -975,6 +1142,7 @@
           {#each troubleOptions.value as option}
             <CarInfoSingleSelectOption
               value={option}
+              className="history_click"
               bind:selectedOptions={inspectionTrouble}
               on:click={handleCheckboxChangeTrouble}
             ></CarInfoSingleSelectOption>
@@ -1000,6 +1168,7 @@
           {#each jisouOptions.value as option}
             <CarInfoSingleSelectOption
               value={option}
+              className="jisou_click"
               bind:selectedOptions={jisou}
               variant="buttonOption"
             ></CarInfoSingleSelectOption>
@@ -1014,7 +1183,7 @@
       </ChatBalloons>
     {/if}
 
-    {#if isInspectionDateRequest}
+    <!-- {#if isInspectionDateRequest}
       <ChatBalloons isWait={false}>
         <span class="boldText">次回の車検日</span>はいつになりますか？
       </ChatBalloons>
@@ -1048,6 +1217,7 @@
           {#each inspectionDateOptions.value as option}
             <CarInfoSingleSelectOption
               value={option}
+              className="shaken_click"
               bind:selectedOptions={inspectionDate}
               on:click={handleCheckboxChangeInspectionDate}
             ></CarInfoSingleSelectOption>
@@ -1072,6 +1242,7 @@
           {#each loanOptions.value as option}
             <CarInfoSingleSelectOption
               value={option}
+              className="lone_click"
               bind:selectedOptions={loan}
               variant="buttonOption"
             ></CarInfoSingleSelectOption>
@@ -1084,7 +1255,7 @@
       <ChatBalloons variant="user" isWait={false}>
         <span class="boldText">{loan}</span>。
       </ChatBalloons>
-    {/if}
+    {/if} -->
 
     {#if isDesiredTimeRequest}
       <ChatBalloons isWait={false}>
@@ -1118,11 +1289,17 @@
         </div>
         <div slot="selectionContent" class="selectionContent">
           {#each DesiredTimeOptions.value as option}
-            <CarInfoSingleSelectOption
-              value={option}
-              bind:selectedOptions={isDesiredTime}
-              on:click={handleCheckboxChangeDesiredTime}
-            ></CarInfoSingleSelectOption>
+            <div>
+              <CarInfoSingleSelectOption
+                value={option}
+                className="sale_timing"
+                bind:selectedOptions={isDesiredTime}
+                on:click={(event) => {
+                  handleCheckboxChangeDesiredTime();
+                  pushToDataLayer(event);
+                }}
+              ></CarInfoSingleSelectOption>
+            </div>
           {/each}
         </div>
       </Modal>
@@ -1134,7 +1311,7 @@
       </ChatBalloons>
     {/if}
 
-    {#if isCandidateDateRequest}
+    <!-- {#if isCandidateDateRequest}
       <div>
         <ChatBalloons isWait={false}>
           <span class="boldText">査定候補日</span>を教えてください
@@ -1152,11 +1329,11 @@
       <ChatBalloons variant="user" isWait={false}>
         <span class="boldText">{formattedCandidateDate}</span>です
       </ChatBalloons>
-    {/if}
+    {/if} -->
 
     {#if isThankYouMessage}
       <ChatBalloons>
-        ここまで8項目をご回答いただき、ありがとうございます！
+        ここまで6項目をご回答いただき、ありがとうございます！
       </ChatBalloons>
     {/if}
 
@@ -1200,6 +1377,7 @@
               placeholder="山田太郎"
               required
               autocomplete="name"
+              className="yourName"
               on:change={debounce((event) => {
                 nameInputHandler(event);
               }, actionWaitTime)}
@@ -1214,10 +1392,11 @@
 
         <InputWrap>
           <Input
-            type="number"
-            inputmode="numeric"
+            type="text"
+            isNumeric={true}
             slot="input"
             name="zipcode"
+            className="yourZip"
             readonly={isShowContactRequest && isNotModifyMode}
             bind:value={$formStore.zipcode}
             label="郵便番号"
@@ -1252,6 +1431,7 @@
               readonly
               bind:value={$formStore.address}
               label="住所"
+              className="youraddress"
               required
               autocomplete="address-level1"
               on:change={debounce((event) => {
@@ -1292,6 +1472,7 @@
             readonly={isShowInputEnd && isNotModifyMode}
             required
             autocomplete="email"
+            className="yourEmail"
             bind:value={$formStore.youremail}
             label="メールアドレス"
             on:keypress={debounce((event) => {
@@ -1314,7 +1495,7 @@
         <InputWrap>
           <Input
             slot="input"
-           type="tel"
+            type="tel"
             name="tel"
             placeholder="09012345678(ハイフン無し)"
             cautionMessage="査定結果のご連絡やご本人様確認のために使用いたします"
@@ -1322,6 +1503,7 @@
             required
             autocomplete="tel"
             replaceKeyword="-"
+            className="yourTel"
             bind:value={$formStore.tel}
             label="電話番号"
             on:keypress={debounce((event) => {

@@ -5,18 +5,19 @@
   export let variant: "radioOption" | "radioOption-columns" | "buttonOption" =
     "radioOption";
 
+  // classプロパティを受け取る
+  export let className: string = "";
+
   let checked: boolean;
 
   $: checked = selectedOptions === value;
 
-
-
   const dispatch = createEventDispatcher();
 
-function handleClick() {
-  // クリックイベントを外部に伝播
-  dispatch('click');
-}
+  function handleClick() {
+    // クリックイベントを外部に伝播
+    dispatch('click');
+  }
 
   const checkToggle = () => {
     checked = !checked;
@@ -34,7 +35,7 @@ function handleClick() {
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div
-  class="option {checked ? 'checked' : ''}"
+  class="option {checked ? 'checked' : ''} {className}"
   role="checkbox"
   aria-checked={checked}
   tabindex="0"
