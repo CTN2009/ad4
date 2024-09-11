@@ -1,35 +1,57 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
-  export let value: string;
-  export let selectedOptions: string;
-  export let variant: "radioOption" | "radioOption-columns" | "buttonOption" =
-    "radioOption";
 
-  // classプロパティを受け取る
+  interface Option {
+    label: string;
+    value: string;
+  }
+
+  export let option: Option | null = null;
+  export let value: string | null = null;
+  export let selectedOptions: string;
+  export let selectedDisplayValue: string = "";
+  export let variant: "radioOption" | "radioOption-columns" | "buttonOption" = "radioOption";
   export let className: string = "";
 
   let checked: boolean;
+  let displayValue: string;
+  let optionValue: string;
 
-  $: checked = selectedOptions === value;
+  $: {
+    if (option) {
+      displayValue = option.label;
+      optionValue = option.value;
+    } else if (value !== null) {
+      displayValue = value;
+      optionValue = value;
+    } else {
+      displayValue = "";
+      optionValue = "";
+    }
+    checked = selectedOptions === optionValue;
+    if (checked) {
+      selectedDisplayValue = displayValue;
+    }
+  }
 
   const dispatch = createEventDispatcher();
 
   function handleClick() {
-    // クリックイベントを外部に伝播
     dispatch('click');
   }
 
   const checkToggle = () => {
     checked = !checked;
     if (checked === true) {
-      selectedOptions = value;
-    } else if (value === selectedOptions) {
-      // 一度選択されているものは解除できなくするための制御.
+      selectedOptions = optionValue;
+      selectedDisplayValue = displayValue;
+    } else if (optionValue === selectedOptions) {
       checked = true;
     } else {
       selectedOptions = "";
+      selectedDisplayValue = "";
     }
-    dispatch("select", { selectedOptions });
+    dispatch("select", { selectedOptions, selectedDisplayValue });
   };
 </script>
 
@@ -47,7 +69,7 @@
     class="customRadio {checked ? 'checked' : ''}"
     data-variant={variant}
   ></div>
-  {value}
+  {displayValue}
 </div>
 
 <style lang="scss">
