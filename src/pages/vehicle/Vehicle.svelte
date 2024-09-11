@@ -77,6 +77,7 @@
   let jisou: string = ""; // 自走可否
   let inspectionDate: string = ""; // 車検日
   let isRun: string = ""; //走行距離
+  let isRunDisplay: string = ""; //走行距離
   let inspectionTrouble: string = ""; //事故歴・修復歴
   let fuel: string = ""; // 燃料
   let exteriorCondition: string[] = []; // 外装(該当なしの場合は空)
@@ -1066,8 +1067,8 @@ onMount(() => {
             showRunModal = true;
           }}
         >
-          {#if isRun !== ""}
-            {isRun}
+          {#if isRunDisplay !== ""}
+            {isRunDisplay}
           {:else}
             選択してください
           {/if}
@@ -1091,11 +1092,12 @@ onMount(() => {
         >
           {#each runOptions.value as option}
             <CarInfoSingleSelectOption
-              value={option}
+              option={option}
               className="distance_click"
               bind:selectedOptions={isRun}
+              bind:selectedDisplayValue={isRunDisplay}
               on:click={handleCheckboxChangeRun}
-            ></CarInfoSingleSelectOption>
+              ></CarInfoSingleSelectOption>
           {/each}
         </div>
       </Modal>
@@ -1103,7 +1105,7 @@ onMount(() => {
 
     {#if isRunAnswer}
       <ChatBalloons variant="user" isWait={false}>
-        <span class="boldText">{isRun}</span>。
+        <span class="boldText">{isRunDisplay}</span>。
       </ChatBalloons>
     {/if}
 
@@ -1655,13 +1657,13 @@ onMount(() => {
 
   <!-- 走行距離 -->
   {#each runOptions.value as option}
-    <input
-      type="checkbox"
-      name={runOptions.name}
-      value={option}
-      checked={run === option}
-    />
-  {/each}
+  <input
+    type="checkbox"
+    name={runOptions.name}
+    value={option.value}
+    checked={run === option.value}
+  />
+{/each}
 
   <!-- ローン残債 -->
   {#each loanOptions.value as option}
