@@ -1395,7 +1395,7 @@ onMount(() => {
         <InputWrap>
           <Input
             type="text"
-            isNumeric={true}
+            isNumeric={true} 
             slot="input"
             name="zipcode"
             className="yourZip"
