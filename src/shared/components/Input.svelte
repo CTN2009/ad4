@@ -9,6 +9,7 @@
   export let replaceKeyword: string = "";
   export let cautionMessage: string = "";
   export let autocomplete: string = "";
+  export let isNumeric: boolean = false; // isNumericを追加してデフォルトをfalseに設定
 
   $: {
     if (replaceKeyword !== "" && typeof value === "string") {
@@ -67,6 +68,7 @@
   {#if type === "text"}
     <input
       type="text"
+      inputmode={isNumeric ? "numeric" : undefined}
       bind:value
       on:keypress
       on:keyup
