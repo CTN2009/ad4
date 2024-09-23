@@ -82,7 +82,7 @@ export const  registAppraisalApi = async(appraisal_form_data:AppraisalFormData) 
 			const result = await response.json();
 			localStorage.setItem('responseData', result.content);
 			sessionStorage.setItem('appraisal_form_data', JSON.stringify(appraisal_form_data, null, 2));
-			console.log('Data updated successfully:', result);
+			// console.log('Data updated successfully:', result);
 
 		} else {
 			console.error('Failed to update data:', response.status);
