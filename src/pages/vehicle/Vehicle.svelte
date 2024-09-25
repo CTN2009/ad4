@@ -357,12 +357,12 @@
 
   // 郵便番号で数字以外入れれないようにする
   function restrictNumeric(event: Event): void {
-  const target = event.target as HTMLInputElement;
-  if (target && target.value) {
-    // Remove any non-numeric characters from the current input value
-    target.value = target.value.replace(/[^0-9]/g, "");
+    const target = event.target as HTMLInputElement;
+    if (target && target.value) {
+      // Remove any non-numeric characters from the current input value
+      target.value = target.value.replace(/[^0-9]/g, "");
+    }
   }
-}
   const addressInputHandler = (event: Event): void => {
     validateAddress = genericInputHandler(event, "address");
   };
@@ -698,206 +698,208 @@
     );
   }
 
+  // GTM用のデータレイヤーイベントをプッシュする関数
+  function pushToDataLayer(event, eventName, elementClasses, elementCategory) {
+    const detail = event.detail || {};
 
-// GTM用のデータレイヤーイベントをプッシュする関数
-function pushToDataLayer(event, eventName, elementClasses, elementCategory) {
-  const detail = event.detail || {};
-
-  if (!event.target && !detail.target) {
-    return;
-  }
-
-  const targetElement = event.target || detail.target;
-  window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push({
-    event: eventName,
-    elementClasses: elementClasses || targetElement.className,
-    elementId: targetElement.id || "",
-    elementCategory: elementCategory || "default_category",
-  });
-}
-
-function observeDOMChanges() {
-  // console.log("Starting to observe DOM changes...");
-  const observer = new MutationObserver((mutations) => {
-    for (const mutation of mutations) {
-
-      if (mutation.type === "childList") {
-        // すべての追加されたノードをチェック
-        mutation.addedNodes.forEach((node) => {
-          if (node.nodeType === 1) {
-            // nodeType 1 は ELEMENT_NODE を意味します
-            if (node.classList.contains("optionWrap")) {
-              attachClickListener(node);
-            }
-
-            if (node.classList.contains("dateContent")) {
-              attachClickListener(node);
-            }
-
-            if (node.classList.contains("car_name")) {
-              addShashuClickClass(node);
-            }
-
-            // content-tab-year クラスを持つ要素が追加された場合
-            if (node.classList.contains("year_name")) {
-              addYearClickClass(node); // aタグにyearclickクラスを追加
-            }
-
-            // content-tab-version クラスを持つ要素が追加された場合
-            if (node.classList.contains("content-tab-version")) {
-              addVersionClickClass(node); // aタグにversionclickクラスを追加
-            }
-
-            // 子要素にも `optionWrap` や `dateContent` が含まれている可能性があるため、クエリを実行
-            const nestedOptionWraps = node.querySelectorAll(".optionWrap");
-            nestedOptionWraps.forEach((nestedNode) => {
-              attachClickListener(nestedNode);
-            });
-
-            const nestedDateContents = node.querySelectorAll(".dateContent");
-            nestedDateContents.forEach((nestedNode) => {
-              attachClickListener(nestedNode);
-            });
-          }
-        });
-
-        const selectionContentElement =
-          document.querySelector(".selectionContent");
-        if (selectionContentElement) {
-          attachClickListener(selectionContentElement);
-        }
-      }
-    }
-  });
-
-  observer.observe(document.body, { childList: true, subtree: true });
-}
-
-function attachClickListener(element) {
-  element.addEventListener("click", (event) => {
-    const saleTimingElement = event.target.closest(".sale_timing");
-    if (saleTimingElement) {
-      pushToDataLayer(event, "saleTimingClick", "sale_timing", "sale_timing");
+    if (!event.target && !detail.target) {
+      return;
     }
 
-    const loneClickElement = event.target.closest(".lone_click");
-    if (loneClickElement) {
-      pushToDataLayer(event, "loneClick", "lone_click", "lone_click");
-    }
-
-    const colorSelectElement = event.target.closest(".svelte-11lqw36");
-    if (colorSelectElement) {
-      pushToDataLayer(
-        event,
-        "colorSelect",
-        "svelte-11lqw36",
-        "svelte-11lqw36",
-      );
-    }
-
-    const historySelectElement = event.target.closest(".history_click");
-    if (historySelectElement) {
-      pushToDataLayer(
-        event,
-        "history_click",
-        "history_click",
-        "history_click",
-      );
-    }
-
-    const distanceSelectElement = event.target.closest(".distance_click");
-    if (distanceSelectElement) {
-      pushToDataLayer(
-        event,
-        "distance_click",
-        "distance_click",
-        "distance_click",
-      );
-    }
-
-    const shakenSelectElement = event.target.closest(".shaken_click");
-    if (shakenSelectElement) {
-      pushToDataLayer(event, "shaken_click", "shaken_click", "shaken_click");
-    }
-
-    const dateContentElement = event.target.closest(".dateContent");
-    if (dateContentElement) {
-      pushToDataLayer(event, "dateContentClick", "dateContent", "dateContent");
-    }
-
-    const pickerElement = event.target.closest(".picker");
-    if (pickerElement) {
-      pushToDataLayer(event, "pickerClick", "picker", "picker");
-    }
-
-    const NameElement = event.target.closest(".yourName");
-    if (NameElement) {
-      pushToDataLayer(event, "NameContentClick", "yourName", "yourName");
-    }
-
-    const ZipElement = event.target.closest(".yourZip");
-    if (ZipElement) {
-      pushToDataLayer(event, "ZipContentClick", "yourZip", "yourZip");
-    }
-
-    const AddressElement = event.target.closest(".youraddress");
-    if (AddressElement) {
-      pushToDataLayer(
-        event,
-        "AddressContentClick",
-        "youraddress",
-        "youraddress",
-      );
-    }
-
-    const EmailElement = event.target.closest(".yourEmail");
-    if (EmailElement) {
-      pushToDataLayer(event, "EmailContentClick", "yourEmail", "yourEmail");
-    }
-
-    const TelElement = event.target.closest(".yourtel");
-    if (TelElement) {
-      pushToDataLayer(event, "telContentClick", "yourtel", "yourtel");
-    }
-  });
-}
-
-// すべての `a` タグに `shashu_click` クラスを付与する関数
-function addShashuClickClass(element) {
-  const links = element.querySelectorAll('a');
-  links.forEach((link) => {
-    link.classList.add('shashu_click');
-  });
-}
-
-// すべての `a` タグに `yearclick` クラスを付与する関数
-function addYearClickClass(element) {
-  if (element.classList.contains('year_name')) {
-    const links = element.querySelectorAll("a");
-    links.forEach((link) => {
-      link.classList.add("yearclick");
+    const targetElement = event.target || detail.target;
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: eventName,
+      elementClasses: elementClasses || targetElement.className,
+      elementId: targetElement.id || "",
+      elementCategory: elementCategory || "default_category",
     });
   }
-}
 
-// すべての `a` タグに `versionclick` クラスを付与し、`yearclick` クラスを削除する関数
-function addVersionClickClass(element) {
-  const links = element.querySelectorAll("a");
-  links.forEach((link) => {
-    link.classList.add("versionclick");
+  function observeDOMChanges() {
+    // console.log("Starting to observe DOM changes...");
+    const observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        if (mutation.type === "childList") {
+          // すべての追加されたノードをチェック
+          mutation.addedNodes.forEach((node) => {
+            if (node.nodeType === 1) {
+              // nodeType 1 は ELEMENT_NODE を意味します
+              if (node.classList.contains("optionWrap")) {
+                attachClickListener(node);
+              }
 
-    // もし `yearclick` クラスがあれば削除
-    if (link.classList.contains("yearclick")) {
-      link.classList.remove("yearclick");
+              if (node.classList.contains("dateContent")) {
+                attachClickListener(node);
+              }
+
+              if (node.classList.contains("car_name")) {
+                addShashuClickClass(node);
+              }
+
+              // content-tab-year クラスを持つ要素が追加された場合
+              if (node.classList.contains("year_name")) {
+                addYearClickClass(node); // aタグにyearclickクラスを追加
+              }
+
+              // content-tab-version クラスを持つ要素が追加された場合
+              if (node.classList.contains("content-tab-version")) {
+                addVersionClickClass(node); // aタグにversionclickクラスを追加
+              }
+
+              // 子要素にも `optionWrap` や `dateContent` が含まれている可能性があるため、クエリを実行
+              const nestedOptionWraps = node.querySelectorAll(".optionWrap");
+              nestedOptionWraps.forEach((nestedNode) => {
+                attachClickListener(nestedNode);
+              });
+
+              const nestedDateContents = node.querySelectorAll(".dateContent");
+              nestedDateContents.forEach((nestedNode) => {
+                attachClickListener(nestedNode);
+              });
+            }
+          });
+
+          const selectionContentElement =
+            document.querySelector(".selectionContent");
+          if (selectionContentElement) {
+            attachClickListener(selectionContentElement);
+          }
+        }
+      }
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
+  }
+
+  function attachClickListener(element) {
+    element.addEventListener("click", (event) => {
+      const saleTimingElement = event.target.closest(".sale_timing");
+      if (saleTimingElement) {
+        pushToDataLayer(event, "saleTimingClick", "sale_timing", "sale_timing");
+      }
+
+      const loneClickElement = event.target.closest(".lone_click");
+      if (loneClickElement) {
+        pushToDataLayer(event, "loneClick", "lone_click", "lone_click");
+      }
+
+      const colorSelectElement = event.target.closest(".svelte-11lqw36");
+      if (colorSelectElement) {
+        pushToDataLayer(
+          event,
+          "colorSelect",
+          "svelte-11lqw36",
+          "svelte-11lqw36",
+        );
+      }
+
+      const historySelectElement = event.target.closest(".history_click");
+      if (historySelectElement) {
+        pushToDataLayer(
+          event,
+          "history_click",
+          "history_click",
+          "history_click",
+        );
+      }
+
+      const distanceSelectElement = event.target.closest(".distance_click");
+      if (distanceSelectElement) {
+        pushToDataLayer(
+          event,
+          "distance_click",
+          "distance_click",
+          "distance_click",
+        );
+      }
+
+      const shakenSelectElement = event.target.closest(".shaken_click");
+      if (shakenSelectElement) {
+        pushToDataLayer(event, "shaken_click", "shaken_click", "shaken_click");
+      }
+
+      const dateContentElement = event.target.closest(".dateContent");
+      if (dateContentElement) {
+        pushToDataLayer(
+          event,
+          "dateContentClick",
+          "dateContent",
+          "dateContent",
+        );
+      }
+
+      const pickerElement = event.target.closest(".picker");
+      if (pickerElement) {
+        pushToDataLayer(event, "pickerClick", "picker", "picker");
+      }
+
+      const NameElement = event.target.closest(".yourName");
+      if (NameElement) {
+        pushToDataLayer(event, "NameContentClick", "yourName", "yourName");
+      }
+
+      const ZipElement = event.target.closest(".yourZip");
+      if (ZipElement) {
+        pushToDataLayer(event, "ZipContentClick", "yourZip", "yourZip");
+      }
+
+      const AddressElement = event.target.closest(".youraddress");
+      if (AddressElement) {
+        pushToDataLayer(
+          event,
+          "AddressContentClick",
+          "youraddress",
+          "youraddress",
+        );
+      }
+
+      const EmailElement = event.target.closest(".yourEmail");
+      if (EmailElement) {
+        pushToDataLayer(event, "EmailContentClick", "yourEmail", "yourEmail");
+      }
+
+      const TelElement = event.target.closest(".yourtel");
+      if (TelElement) {
+        pushToDataLayer(event, "telContentClick", "yourtel", "yourtel");
+      }
+    });
+  }
+
+  // すべての `a` タグに `shashu_click` クラスを付与する関数
+  function addShashuClickClass(element) {
+    const links = element.querySelectorAll("a");
+    links.forEach((link) => {
+      link.classList.add("shashu_click");
+    });
+  }
+
+  // すべての `a` タグに `yearclick` クラスを付与する関数
+  function addYearClickClass(element) {
+    if (element.classList.contains("year_name")) {
+      const links = element.querySelectorAll("a");
+      links.forEach((link) => {
+        link.classList.add("yearclick");
+      });
     }
+  }
+
+  // すべての `a` タグに `versionclick` クラスを付与し、`yearclick` クラスを削除する関数
+  function addVersionClickClass(element) {
+    const links = element.querySelectorAll("a");
+    links.forEach((link) => {
+      link.classList.add("versionclick");
+
+      // もし `yearclick` クラスがあれば削除
+      if (link.classList.contains("yearclick")) {
+        link.classList.remove("yearclick");
+      }
+    });
+  }
+
+  onMount(() => {
+    observeDOMChanges(); // ページロード時にDOMの変化を監視開始
   });
-}
-
-onMount(() => {
-  observeDOMChanges(); // ページロード時にDOMの変化を監視開始
-});
-
 
   // 共通関数
   // 複数選択肢の場合、画面上に表示する文言を取得
@@ -936,7 +938,11 @@ onMount(() => {
       </ChatBalloons>
       {#if isShowPersonalInfoRequest === true}
         <ChatBalloons>
-          一括査定では下取りより50万円以上も買取価格が高くなる可能性があります。
+          一括査定では下取りより50万円以上も買取価格が高くなる可能性があります。<br
+          /><br />
+          <span class="accentTextRed">
+            さらに！毎月抽選で50名様に1万円が当たるキャンペーン実施中！
+          </span>
         </ChatBalloons>
       {/if}
     </div>
@@ -1093,12 +1099,12 @@ onMount(() => {
         >
           {#each runOptions.value as option}
             <CarInfoSingleSelectOption
-              option={option}
+              {option}
               className="distance_click"
               bind:selectedOptions={isRun}
               bind:selectedDisplayValue={isRunDisplay}
               on:click={handleCheckboxChangeRun}
-              ></CarInfoSingleSelectOption>
+            ></CarInfoSingleSelectOption>
           {/each}
         </div>
       </Modal>
@@ -1396,7 +1402,7 @@ onMount(() => {
         <InputWrap>
           <Input
             type="text"
-            isNumeric={true} 
+            isNumeric={true}
             slot="input"
             name="zipcode"
             className="yourZip"
@@ -1658,13 +1664,13 @@ onMount(() => {
 
   <!-- 走行距離 -->
   {#each runOptions.value as option}
-  <input
-    type="checkbox"
-    name={runOptions.name}
-    value={option.value}
-    checked={run === option.value}
-  />
-{/each}
+    <input
+      type="checkbox"
+      name={runOptions.name}
+      value={option.value}
+      checked={run === option.value}
+    />
+  {/each}
 
   <!-- ローン残債 -->
   {#each loanOptions.value as option}
@@ -1831,5 +1837,9 @@ onMount(() => {
       background-image: url(../../shared/image/selectbox_arrow.webp);
       transform: translateY(-50%);
     }
+  }
+
+  .accentTextRed {
+    color: var(--ctn-decision);
   }
 </style>
