@@ -40,8 +40,14 @@ export const genericInputHandler = (
   callBack: (isValid: boolean, value: string) => void = () => {},
 ): ValidationResult => {
   const target = event.target as HTMLInputElement;
-  const value = target.value;
-  const isValid = validate(target.value, regexFormat[subscript]);
+  let value = target.value;
+
+  // If the subscript is 'zipcode' and the value contains '〒', remove it
+  if (subscript === "zipcode" && value.includes("〒")) {
+    value = value.replace("〒", ""); // Remove the '〒' character
+  }
+
+  const isValid = validate(value, regexFormat[subscript]); // Use the modified value for validation
   const stateObject = updateValidateState(value, isValid);
   callBack(isValid, value);
   return stateObject;

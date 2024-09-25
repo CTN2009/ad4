@@ -205,6 +205,7 @@
   // 住所検索機能
   const doAddressSearch = async (target: string): Promise<void> => {
     try {
+      $formStore.zipcode = target;
       isAddressSearchRunning = true;
       const result = await addressSearch(target);
       $formStore.address = `${result.address1}${result.address2}${result.address3}`;
@@ -355,13 +356,13 @@
   };
 
   // 郵便番号で数字以外入れれないようにする
-  function restrictNumeric(event) {
-    const regex = /^[0-9]*$/; // 数字のみを許可する正規表現パターン
-    const newValue = event.target.value + event.key; // 入力された値とキーを含む新しい値
-    if (!regex.test(event.key)) {
-      event.target.value = event.target.value.replace(/[^0-9]/g, ""); // 数字以外を削除する
-    }
+  function restrictNumeric(event: Event): void {
+  const target = event.target as HTMLInputElement;
+  if (target && target.value) {
+    // Remove any non-numeric characters from the current input value
+    target.value = target.value.replace(/[^0-9]/g, "");
   }
+}
   const addressInputHandler = (event: Event): void => {
     validateAddress = genericInputHandler(event, "address");
   };
@@ -717,7 +718,7 @@ function pushToDataLayer(event, eventName, elementClasses, elementCategory) {
 }
 
 function observeDOMChanges() {
-  console.log("Starting to observe DOM changes...");
+  // console.log("Starting to observe DOM changes...");
   const observer = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
 

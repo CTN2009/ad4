@@ -282,7 +282,7 @@
   let textraData: any[] = [];
 
   const handleSelectBrand = (brand: string) => {
-    console.log(brand);
+    //console.log(brand);
     currentTabState = "vehicles";
     dispatch("changeTitle", { message: "車種" });
     currentBrand = brand;
@@ -340,7 +340,7 @@
   //------------------------
   let yearData: any[] = [];
   const handleSelectVehicle = (vehicle: string) => {
-    console.log(vehicle);
+    //console.log(vehicle);
     currentTabState = "year";
     dispatch("changeTitle", { message: "年式" });
     currentVehicle = vehicle;
@@ -358,14 +358,14 @@
       });
     }
 
-    console.log(yearData);
+    //console.log(yearData);
   };
   //-----------------------
   // version
   //------------------------
   let versionData: any[] = [];
   const handleSelectYear = (year: string) => {
-    console.log(year);
+    //console.log(year);
     dispatch("changeTitle", { message: "グレード" });
     currentTabState = "version";
     currentYear = year;
@@ -387,7 +387,7 @@
       });
     }
 
-    console.log(versionData);
+    //console.log(versionData);
   };
   //--------------------------
   // version選択
