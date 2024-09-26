@@ -359,6 +359,16 @@
   function restrictNumeric(event: Event): void {
     const target = event.target as HTMLInputElement;
     if (target && target.value) {
+      // Check if full-width digits are present
+      const fullWidthRegex = /[０-９]/;
+      
+      if (fullWidthRegex.test(target.value)) {
+        // Convert full-width digits to half-width digits only if full-width characters are present
+        target.value = target.value.replace(/[０-９]/g, (s) =>
+          String.fromCharCode(s.charCodeAt(0) - 0xFEE0)
+        );
+      }
+
       // Remove any non-numeric characters from the current input value
       target.value = target.value.replace(/[^0-9]/g, "");
     }
@@ -1411,7 +1421,7 @@
             label="郵便番号"
             placeholder="1234567(ハイフンなし)"
             required
-            autocomplete="postal-code"
+            autocomplete="off"
             replaceKeyword="-"
             on:input={restrictNumeric}
             on:keyup={debounce((event) => {

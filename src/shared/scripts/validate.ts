@@ -42,9 +42,21 @@ export const genericInputHandler = (
   const target = event.target as HTMLInputElement;
   let value = target.value;
 
-  // If the subscript is 'zipcode' and the value contains '〒', remove it
-  if (subscript === "zipcode" && value.includes("〒")) {
-    value = value.replace("〒", ""); // Remove the '〒' character
+   // If the subscript is 'zipcode'
+  if (subscript === "zipcode") {
+    // Remove the '〒' character if present
+    if (value.includes("〒")) {
+      value = value.replace("〒", "");
+    }
+
+    // Check if full-width digits are present
+    const fullWidthRegex = /[０-９]/;
+    if (fullWidthRegex.test(value)) {
+      // Convert full-width digits to half-width digits
+      value = value.replace(/[０-９]/g, (s) =>
+        String.fromCharCode(s.charCodeAt(0) - 0xFEE0)
+      );
+    }
   }
 
   const isValid = validate(value, regexFormat[subscript]); // Use the modified value for validation

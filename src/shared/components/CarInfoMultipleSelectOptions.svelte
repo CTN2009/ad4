@@ -8,20 +8,22 @@
 
   let checked: boolean;
 
-  $: if (disabled) checked = false;
+  // Update checked status based on the group
+  $: checked = group.includes(value);
 
   const dispatch = createEventDispatcher();
 
-function handleClick() {
-  // クリックイベントを外部に伝播
-  dispatch('click');
-}
+  function handleClick() {
+    dispatch('click');
+  }
 
-  // グループに選択肢が含まれているかどうかをチェックし、checkedを更新
-  $: checked = group.includes(value);
-
+  // Modify the checkToggle function to ensure at least one option is always selected
   const checkToggle = (): void => {
-    // 選択されていない場合は追加
+    // If there is only one item in the group and it's the current value, don't allow deselect
+    if (checked && group.length === 1) {
+      return; // Block deselect if it's the last selected option
+    }
+
     if (!checked) {
       group = [value];
     } else {
