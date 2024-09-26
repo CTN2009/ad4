@@ -1421,7 +1421,7 @@
             label="郵便番号"
             placeholder="1234567(ハイフンなし)"
             required
-            autocomplete="postal-code"
+            autocomplete="off"
             replaceKeyword="-"
             on:input={restrictNumeric}
             on:keyup={debounce((event) => {
