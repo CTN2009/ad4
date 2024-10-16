@@ -1,3 +1,7 @@
+<?php
+// クッキーからabcの値を取得
+$abcValue = isset($_COOKIE['abc']) ? $_COOKIE['abc'] : '';
+?>
 <!doctype html>
 <html lang="ja">
 
@@ -23,7 +27,7 @@
 var uqid   = "3ded5G135605b816";
 var cid    = "10";
 var uid   = "<?php echo $parameter_2 ?>";
-var uid2   = "";
+var uid2   = "<?php echo htmlspecialchars($abcValue, ENT_QUOTES, 'UTF-8'); ?>";  // PHPで取得したabcクッキーの値をJavaScript変数に設定
 var af   = "";
 var pid    = "";
 var amount = "";
@@ -293,7 +297,7 @@ $(function() {
 </script>
 <!-- 20241001SSタグ設置 -->
 
-<!-- 
+<!--
 <input type="hidden" id="ctn_wpc_f7_counter" name="ctn_wpc_f7_counter" value="<?php echo do_shortcode('[CF7_counter]'); ?>">
 <input type="hidden" id="ctn_e" name="ctn_e" value="pr">
 <input type="hidden" id="ctn_t" name="ctn_t" value="a">
