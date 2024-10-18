@@ -35,7 +35,7 @@
     {label}{#if required}<span class="required">※必須</span>{/if}
   </label>
   {#if cautionMessage != ""}
-    <small>{cautionMessage}</small>
+    <small class="cautionMessage">{cautionMessage}</small>
   {/if}
   {#if type === "email"}
     <input
@@ -129,6 +129,13 @@
     margin-inline-start: 5px;
     font-size: 12px;
     text-shadow: 1px 1px 2px white;
+  }
+  .cautionMessage{
+    color: #ff0000;
+    display: inline-block;
+    margin-inline-start: 5px;
+    font-size: 11px;
+    font-weight:bold;
   }
   .input {
     border: var(--ctn-border);
