@@ -162,6 +162,7 @@
   let isNotModifyMode = true;
   let authCode = "";
   let isSubmit = false;
+  let isSubmitting = false; // ボタンが送信中かどうかを管理する
 
   // memo: validate結果を保存して、コンテンツ制御に利用するstate.
   let validateYourname = initValidationResult();
@@ -234,6 +235,7 @@
     modalTitleVehicle = event.detail.message;
   };
   const onFormSubmit = async () => {
+    isSubmitting = true; // ボタンを無効化するために true に設定
     var formData = sessionStorage.getItem("appraisal_form_data");
     let zipcode = $formStore.zipcode;
 
@@ -361,7 +363,7 @@
     if (target && target.value) {
       // Check if full-width digits are present
       const fullWidthRegex = /[０-９]/;
-      
+
       if (fullWidthRegex.test(target.value)) {
         // Convert full-width digits to half-width digits only if full-width characters are present
         target.value = target.value.replace(/[０-９]/g, (s) =>
@@ -1517,7 +1519,7 @@
             type="tel"
             name="tel"
             placeholder="09012345678(ハイフン無し)"
-            cautionMessage="査定結果のご連絡やご本人様確認のために使用いたします"
+            cautionMessage="※電話は最大3社からのみ。査定結果のご連絡やご本人様確認のために使用いたします"
             readonly={isShowInputEnd && isNotModifyMode}
             required
             autocomplete="tel"
@@ -1651,8 +1653,12 @@
         <Button
           variant="decision"
           on:click={async () => {
-            onFormSubmit();
-          }}>無料査定する</Button
+            if (!isSubmitting) {
+              await onFormSubmit();
+            }
+          }}
+          disabled={isSubmitting}
+          >無料査定する</Button
         >
       </DelayedDisplay>
     {/if}
