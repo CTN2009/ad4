@@ -347,15 +347,18 @@
     validateYourname = genericInputHandler(event, "yourname");
   };
 
-  const zipCodeInputHandler = (event: Event): void => {
-    validateZipcode = genericInputHandler(
-      event,
-      "zipcode",
-      (isValid, value) => {
-        if (isValid) doAddressSearch(value);
-      },
-    );
-  };
+// 郵便番号が7桁かどうかを確認し、7桁未満の場合は住所自動入力を行わない
+const zipCodeInputHandler = (event: Event): void => {
+  validateZipcode = genericInputHandler(event, "zipcode", (isValid, value) => {
+    if (isValid && value.length === 7) {
+      // 郵便番号が7桁の場合のみ住所検索を実行
+      doAddressSearch(value);
+    } else {
+      // 7桁未満の場合は無効として扱う
+      validateZipcode.isValid = false;
+    }
+  });
+};
 
   // 郵便番号で数字以外入れれないようにする
   function restrictNumeric(event: Event): void {
@@ -412,10 +415,11 @@
     validateAddress.isValid &&
     validateAddress2.isValid;
 
-  $: if (validateAddress.isValid) {
-    handleScrollToBottom({ waitTime: 1250, compensation: -80 });
-    isShowThankRequest = true;
-  }
+ // 以下のリアクティブブロックで、郵便番号が7桁でない場合は次に進まないように制御
+$: if (validateZipcode.isValid && validateYourname.isValid && validateAddress.isValid) {
+  handleScrollToBottom({ waitTime: 1250, compensation: -80 });
+  isShowThankRequest = true;
+}
 
   $: if (isShowThankRequest) {
     // handleScrollToBottom({ waitTime: 1250 });
@@ -1204,79 +1208,7 @@
       </ChatBalloons>
     {/if}
 
-    <!-- {#if isInspectionDateRequest}
-      <ChatBalloons isWait={false}>
-        <span class="boldText">次回の車検日</span>はいつになりますか？
-      </ChatBalloons>
 
-      <DelayedDisplay>
-        <button
-          type="button"
-          class="selectHandle"
-          on:click={() => {
-            showInspectionDateModal = true;
-          }}
-        >
-          {#if inspectionDate !== ""}
-            {inspectionDate}
-          {:else}
-            選択してください
-          {/if}
-        </button>
-      </DelayedDisplay>
-
-      <Modal
-        bind:show={showInspectionDateModal}
-        {confirmBtnText}
-        hasError={inspectionDate == ""}
-        errorMessage="車検日を選択してください。"
-      >
-        <div slot="itemName">
-          <h2>車検日</h2>
-        </div>
-        <div slot="selectionContent" class="selectionContent">
-          {#each inspectionDateOptions.value as option}
-            <CarInfoSingleSelectOption
-              value={option}
-              className="shaken_click"
-              bind:selectedOptions={inspectionDate}
-              on:click={handleCheckboxChangeInspectionDate}
-            ></CarInfoSingleSelectOption>
-          {/each}
-        </div>
-      </Modal>
-    {/if}
-
-    {#if isInspectionDateAnswer}
-      <ChatBalloons variant="user" isWait={false}>
-        <span class="boldText">{inspectionDate}</span>です。
-      </ChatBalloons>
-    {/if}
-
-    {#if isLoanRequest}
-      <ChatBalloons isWait={false}>
-        現在、<span class="boldText">ローン残債</span>はありますか？
-      </ChatBalloons>
-
-      <DelayedDisplay>
-        <div class="optionWrap">
-          {#each loanOptions.value as option}
-            <CarInfoSingleSelectOption
-              value={option}
-              className="lone_click"
-              bind:selectedOptions={loan}
-              variant="buttonOption"
-            ></CarInfoSingleSelectOption>
-          {/each}
-        </div>
-      </DelayedDisplay>
-    {/if}
-
-    {#if isLoanAnswer}
-      <ChatBalloons variant="user" isWait={false}>
-        <span class="boldText">{loan}</span>。
-      </ChatBalloons>
-    {/if} -->
 
     {#if isDesiredTimeRequest}
       <ChatBalloons isWait={false}>
@@ -1332,25 +1264,7 @@
       </ChatBalloons>
     {/if}
 
-    <!-- {#if isCandidateDateRequest}
-      <div>
-        <ChatBalloons isWait={false}>
-          <span class="boldText">査定候補日</span>を教えてください
-        </ChatBalloons>
-      </div>
-      <DelayedDisplay>
-        <CandidateDatePicker
-          bind:date={candidateDate}
-          cssClass="selectHandle"
-        />
-      </DelayedDisplay>
-    {/if}
 
-    {#if isCandidateDateAnswer}
-      <ChatBalloons variant="user" isWait={false}>
-        <span class="boldText">{formattedCandidateDate}</span>です
-      </ChatBalloons>
-    {/if} -->
 
     {#if isThankYouMessage}
       <ChatBalloons>
@@ -1425,7 +1339,12 @@
             required
             autocomplete="off"
             replaceKeyword="-"
-            on:input={restrictNumeric}
+            on:input={(event) => {
+              if (event.target.value.length > 7) {
+                event.target.value = event.target.value.slice(0, 7);
+              }
+              restrictNumeric(event);
+            }}
             on:keyup={debounce((event) => {
               zipCodeInputHandler(event);
             }, 250)}
